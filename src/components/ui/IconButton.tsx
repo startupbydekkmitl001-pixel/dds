@@ -1,24 +1,27 @@
 import { View } from 'react-native';
 import { PressableScale } from '@/components/motion/PressableScale';
 import { useTheme } from '@/theme/ThemeProvider';
+import { GlassLayers } from './Glass';
 import { Icon, type LucideIcon } from './Icon';
 import { Text } from './Text';
 
-/** 44pt round icon button with an accessible label and optional count badge. */
+/** 44pt round glass icon button with an accessible label and optional count badge. */
 export function IconButton({
   icon,
   label,
   onPress,
   badge,
   tone = 'card',
+  color,
 }: {
   icon: LucideIcon;
   label: string;
   onPress: () => void;
   badge?: number;
   tone?: 'card' | 'plain';
+  color?: string;
 }) {
-  const { c } = useTheme();
+  const { c, elevation } = useTheme();
   return (
     <PressableScale
       accessibilityLabel={badge ? `${label} ${badge} รายการใหม่` : label}
@@ -31,18 +34,17 @@ export function IconButton({
         borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: tone === 'card' ? c.card : 'transparent',
-        borderWidth: tone === 'card' ? 1 : 0,
-        borderColor: c.hairline,
+        boxShadow: tone === 'card' ? elevation.low : undefined,
       }}
     >
-      <Icon icon={icon} size={20} />
+      {tone === 'card' ? <GlassLayers radius={22} /> : null}
+      <Icon icon={icon} size={20} color={color} />
       {badge ? (
         <View
           style={{
             position: 'absolute',
-            top: -2,
-            right: -2,
+            top: -3,
+            right: -3,
             minWidth: 20,
             height: 20,
             borderRadius: 10,

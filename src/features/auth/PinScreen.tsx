@@ -3,8 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BorderTrace, useShake } from '@/components/motion';
-import { Button, Text } from '@/components/ui';
+import { AmbientLight, BorderTrace, useShake } from '@/components/motion';
+import { Button, GlassLayers, Text } from '@/components/ui';
 import { getPin } from '@/data/pinStorage';
 import { useApp } from '@/data/store';
 import { now } from '@/lib/clock';
@@ -115,6 +115,7 @@ export default function PinScreen() {
 
   return (
     <View style={[styles.fill, { backgroundColor: c.canvas, paddingTop: insets.top + 24, paddingBottom: insets.bottom + 12 }]}>
+      <AmbientLight />
       <Animated.View style={[styles.head, revealStyle]}>
         <Text variant="eyebrow" tone="secondary">
           DSCHOOL · STUDENT
@@ -132,9 +133,10 @@ export default function PinScreen() {
 
       <View style={styles.middle}>
         <Animated.View style={[styles.dotsBox, { width: DOTS_W, height: DOTS_H }, shakeStyle]}>
+          <GlassLayers radius={DOTS_H / 2} />
           <PinDots length={PIN_LENGTH} filled={digits.length} state={state} />
           {state === 'success' ? (
-            <BorderTrace width={DOTS_W} height={DOTS_H} radius={32} color={c.success} mode="once" onDone={unlock} />
+            <BorderTrace width={DOTS_W} height={DOTS_H} radius={DOTS_H / 2} color={c.success} mode="once" onDone={unlock} />
           ) : null}
         </Animated.View>
         <View style={styles.caption} accessibilityLiveRegion="polite">
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
   fill: { flex: 1, alignItems: 'center', paddingHorizontal: 20 },
   head: { alignItems: 'center', gap: 2 },
   middle: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, minHeight: 120 },
-  dotsBox: { alignItems: 'center', justifyContent: 'center' },
+  dotsBox: { alignItems: 'center', justifyContent: 'center', borderRadius: DOTS_H / 2 },
   caption: { minHeight: 22 },
   forgot: { marginTop: 8, alignSelf: 'center' },
 });

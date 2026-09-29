@@ -1,7 +1,7 @@
 import { Pressable, type GestureResponderEvent, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { haptic as haptics } from '@/lib/haptics';
-import { dur, ease, PRESS_SCALE } from '@/theme/motion';
+import { dur, ease, PRESS_SCALE, springSoft } from '@/theme/motion';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -11,7 +11,7 @@ export type PressableScaleProps = Omit<PressableProps, 'style'> & {
   haptic?: 'selection' | 'light' | false;
 };
 
-/** Pressable that dips to 97% while held (Origin's quick 200ms ease). */
+/** Pressable that dips to 97% while held and springs softly back on release. */
 export function PressableScale({
   scaleTo = PRESS_SCALE,
   haptic = false,
@@ -35,7 +35,7 @@ export function PressableScale({
         onPressIn?.(e);
       }}
       onPressOut={(e: GestureResponderEvent) => {
-        scale.value = withTiming(1, { duration: dur.fast, easing: ease.standard });
+        scale.value = reduced ? 1 : withSpring(1, springSoft);
         onPressOut?.(e);
       }}
       onPress={(e: GestureResponderEvent) => {

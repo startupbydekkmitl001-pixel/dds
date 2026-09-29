@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSpring } from 'react-native-reanimated';
 import { haptic } from '@/lib/haptics';
-import { dur, ease } from '@/theme/motion';
+import { springSoft } from '@/theme/motion';
 import { useTheme } from '@/theme/ThemeProvider';
+import { white, withAlpha } from '@/theme/tokens';
+import { GlassLayers } from './Glass';
 import { Text } from './Text';
 
-/** Segmented control with a sliding thumb (Vivid+Co focus-pull curve). */
+const PAD = 4;
+
+/** Glass pill track with a glossy thumb that glides (and settles softly) to the selection. */
 export function Segmented<T extends string>({
   options,
   value,
@@ -18,26 +22,34 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void;
   style?: StyleProp<ViewStyle>;
 }) {
-  const { c } = useTheme();
+  const { c, scheme, elevation } = useTheme();
+  const reduced = useReducedMotion();
   const [width, setWidth] = useState(0);
   const index = Math.max(0, options.findIndex((o) => o.value === value));
-  const segment = width > 0 ? (width - 6) / options.length : 0;
+  const segment = width > 0 ? (width - PAD * 2) / options.length : 0;
   const x = useSharedValue(0);
+  const placed = useSharedValue(false);
 
   useEffect(() => {
-    x.value = withTiming(index * segment, { duration: dur.base, easing: ease.base });
-  }, [index, segment, x]);
+    const to = index * segment;
+    if (!placed.value || reduced) {
+      x.value = to;
+      placed.value = segment > 0;
+      return;
+    }
+    x.value = withSpring(to, springSoft);
+  }, [index, segment, x, placed, reduced]);
 
   const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+  const thumbFill = scheme === 'dark' ? withAlpha(white, 0.14) : c.cardRaised;
 
   return (
-    <View
-      accessibilityRole="tablist"
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-      style={[styles.track, { backgroundColor: c.hairline }, style]}
-    >
+    <View accessibilityRole="tablist" onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={[styles.track, style]}>
+      <GlassLayers radius={999} gloss={false} />
       {segment > 0 ? (
-        <Animated.View style={[styles.thumb, { width: segment, backgroundColor: c.card }, thumb]} />
+        <Animated.View
+          style={[styles.thumb, { width: segment, backgroundColor: thumbFill, borderColor: c.glassBorder, boxShadow: elevation.low }, thumb]}
+        />
       ) : null}
       {options.map((o) => {
         const selected = o.value === value;
@@ -65,7 +77,7 @@ export function Segmented<T extends string>({
 }
 
 const styles = StyleSheet.create({
-  track: { flexDirection: 'row', borderRadius: 14, padding: 3, minHeight: 42 },
-  thumb: { position: 'absolute', top: 3, bottom: 3, left: 3, borderRadius: 11 },
+  track: { flexDirection: 'row', borderRadius: 999, padding: PAD, minHeight: 46 },
+  thumb: { position: 'absolute', top: PAD, bottom: PAD, left: PAD, borderRadius: 999, borderWidth: 1 },
   option: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8, paddingHorizontal: 6 },
 });

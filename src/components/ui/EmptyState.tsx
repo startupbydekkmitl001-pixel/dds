@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import { GlossOrb } from '@/components/motion/GlossOrb';
 import { StaggerIn } from '@/components/motion/StaggerIn';
 import type { FeatureKey } from '@/data/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -6,7 +7,7 @@ import { Button } from './Button';
 import { Icon, type LucideIcon } from './Icon';
 import { Text } from './Text';
 
-/** An invitation, not an apology: feature-coloured icon, one line, and a next step. */
+/** An invitation, not an apology: a floating pastel orb carrying the icon, one line, and a next step. */
 export function EmptyState({
   feature: key,
   icon,
@@ -23,12 +24,14 @@ export function EmptyState({
   onAction?: () => void;
 }) {
   const { c, feature } = useTheme();
-  const fill = key ? feature[key].fill : c.hairline;
-  const ink = key ? feature[key].ink : c.textSecondary;
+  const f = key ? feature[key] : { fill: c.secondary, ink: c.text, glow: c.accent };
   return (
     <StaggerIn style={styles.wrap}>
-      <View style={[styles.badge, { backgroundColor: fill }]}>
-        <Icon icon={icon} color={ink} size={28} />
+      <View style={styles.badge}>
+        <GlossOrb size={72} color={f.fill} deep={f.glow} />
+        <View style={[StyleSheet.absoluteFill, styles.icon]} pointerEvents="none">
+          <Icon icon={icon} color={f.ink} size={26} />
+        </View>
       </View>
       <Text variant="heading" center>
         {title}
@@ -45,6 +48,7 @@ export function EmptyState({
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', paddingVertical: 32, paddingHorizontal: 24, gap: 10 },
-  badge: { width: 64, height: 64, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
+  badge: { width: 72, height: 85, marginBottom: 4 },
+  icon: { height: 72, alignItems: 'center', justifyContent: 'center' },
   action: { marginTop: 8, alignSelf: 'stretch' },
 });

@@ -1,4 +1,3 @@
-import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
@@ -6,14 +5,17 @@ import { RefreshControl, StyleSheet, View, type StyleProp, type ViewStyle } from
 import Animated, { interpolate, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AmbientLight } from '@/components/motion/AmbientLight';
 import { useTheme } from '@/theme/ThemeProvider';
-import { screenPad, withAlpha } from '@/theme/tokens';
+import { screenPad } from '@/theme/tokens';
+import { GlassLayers } from './Glass';
 import { IconButton } from './IconButton';
 import { Text } from './Text';
 
 /**
- * Screen scaffold: safe-area top, scroll + pull-to-refresh, bottom room for the
- * tab bar, and a compact frosted title bar that fades in once you scroll (spec §4.3).
+ * Screen scaffold: ambient light that parallaxes gently with scroll, safe-area
+ * top, pull-to-refresh, room for the floating tab bar, and a compact frosted
+ * title bar that fades in once you scroll.
  */
 export function Screen({
   children,
@@ -36,7 +38,7 @@ export function Screen({
   padded?: boolean;
   contentStyle?: StyleProp<ViewStyle>;
 }) {
-  const { c, scheme } = useTheme();
+  const { c } = useTheme();
   const insets = useSafeAreaInsets();
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
@@ -53,12 +55,13 @@ export function Screen({
   );
 
   const inner: StyleProp<ViewStyle> = [
-    { paddingTop: insets.top + 8, paddingHorizontal: padded ? screenPad : 0, paddingBottom: 120 + insets.bottom },
+    { paddingTop: insets.top + 8, paddingHorizontal: padded ? screenPad : 0, paddingBottom: 124 + insets.bottom },
     contentStyle,
   ];
 
   return (
     <View style={[styles.fill, { backgroundColor: c.canvas }]}>
+      <AmbientLight scrollY={scrollY} />
       {scroll ? (
         <Animated.ScrollView
           onScroll={onScroll}
@@ -82,8 +85,8 @@ export function Screen({
       )}
       {title ? (
         <Animated.View pointerEvents={barActive ? 'box-none' : 'none'} style={[styles.bar, { height: insets.top + 52 }, barStyle]}>
-          <BlurView intensity={40} tint={scheme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" />
-          <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(c.canvas, 0.72), borderBottomWidth: 1, borderBottomColor: c.hairline }]} />
+          <GlassLayers radius={0} blur strong intensity={50} gloss={false} rim={false} />
+          <View pointerEvents="none" style={[styles.barEdge, { backgroundColor: c.glassBorder }]} />
           <View style={[styles.barRow, { paddingTop: insets.top }]} pointerEvents={barActive ? 'box-none' : 'none'}>
             <View style={styles.barSide}>
               {back ? <IconButton icon={ChevronLeft} label="ย้อนกลับ" tone="plain" onPress={() => router.back()} /> : null}
@@ -102,6 +105,7 @@ export function Screen({
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   bar: { position: 'absolute', top: 0, left: 0, right: 0 },
+  barEdge: { position: 'absolute', left: 0, right: 0, bottom: 0, height: StyleSheet.hairlineWidth },
   barRow: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 },
   barSide: { width: 52 },
   barTitle: { flex: 1, textAlign: 'center' },

@@ -1,7 +1,7 @@
 import { Delete, ScanFace } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 import { PressableScale } from '@/components/motion/PressableScale';
-import { Icon, Text } from '@/components/ui';
+import { GlassLayers, Icon, Text } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 
 const ROWS = [
@@ -11,7 +11,7 @@ const ROWS = [
   ['bio', '0', 'del'],
 ];
 
-/** Large 72pt keypad; Face ID bottom-left (when available), delete bottom-right. */
+/** Large 72pt frosted-glass keypad; Face ID bottom-left (when available), delete bottom-right. */
 export function PinPad({
   onDigit,
   onDelete,
@@ -23,7 +23,7 @@ export function PinPad({
   onBiometric?: () => void;
   disabled?: boolean;
 }) {
-  const { c } = useTheme();
+  const { elevation } = useTheme();
   return (
     <View style={styles.grid}>
       {ROWS.map((row) => (
@@ -52,9 +52,10 @@ export function PinPad({
                 haptic="selection"
                 disabled={disabled}
                 onPress={() => onDigit(k)}
-                style={[styles.key, { backgroundColor: c.card, borderColor: c.hairline, borderWidth: 1, opacity: disabled ? 0.45 : 1 }]}
+                style={[styles.key, { boxShadow: elevation.low, opacity: disabled ? 0.45 : 1 }]}
               >
-                <Text variant="data" size={28}>
+                <GlassLayers radius={36} />
+                <Text variant="title" size={30}>
                   {k}
                 </Text>
               </PressableScale>

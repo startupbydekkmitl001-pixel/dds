@@ -1,8 +1,14 @@
+export { AmbientLight } from './AmbientLight';
+export { Aurora, SoftLight, type OrbSpec } from './Aurora';
 export { BorderTrace } from './BorderTrace';
+export { FrostOverlay } from './FrostOverlay';
 export { roundedRectPath, roundedRectPerimeter } from './geometry';
+export { GlossOrb } from './GlossOrb';
 export { NumberTicker } from './NumberTicker';
 export { PressableScale, type PressableScaleProps } from './PressableScale';
 export { PrismShimmer } from './PrismShimmer';
+export { RollingNumber } from './RollingNumber';
 export { StaggerIn } from './StaggerIn';
+export { ThemeFade } from './ThemeFade';
 export { useShake } from './useShake';
 export { useTilt } from './useTilt';

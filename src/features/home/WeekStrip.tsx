@@ -6,7 +6,7 @@ import { STATUS_LABEL } from '@/lib/attendance';
 import { parseISODate } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
 
-/** Mon–Fri dots for this week; today is ringed. */
+/** Mon–Fri light beads for this week; today wears a lavender halo. */
 export function WeekStrip({ days, today }: { days: { date: string; label: string; status: AttendanceStatus | null }[]; today: string }) {
   const { c, statusColor } = useTheme();
   return (
@@ -31,13 +31,13 @@ export function WeekStrip({ days, today }: { days: { date: string; label: string
               <Text variant="caption" tone={isToday ? 'primary' : 'secondary'}>
                 {d.label}
               </Text>
-              <View style={[styles.ring, { borderColor: isToday ? c.text : 'transparent' }]}>
+              <View style={[styles.ring, { borderColor: isToday ? c.accent : 'transparent' }]}>
                 <View
                   style={[
                     styles.dot,
                     d.status
-                      ? { backgroundColor: statusColor[d.status] }
-                      : { borderWidth: 1.5, borderColor: c.hairline, backgroundColor: 'transparent' },
+                      ? { backgroundColor: statusColor[d.status], borderColor: c.glassBorder, borderWidth: 2 }
+                      : { borderWidth: 1.5, borderColor: c.textSecondary, borderStyle: 'dashed', opacity: 0.45, backgroundColor: 'transparent' },
                   ]}
                 />
               </View>
@@ -56,6 +56,6 @@ const styles = StyleSheet.create({
   head: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
   row: { flexDirection: 'row', justifyContent: 'space-between' },
   col: { alignItems: 'center', gap: 6, flex: 1 },
-  ring: { width: 30, height: 30, borderRadius: 15, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
-  dot: { width: 14, height: 14, borderRadius: 7 },
+  ring: { width: 32, height: 32, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  dot: { width: 18, height: 18, borderRadius: 9 },
 });

@@ -23,7 +23,7 @@ function Dot({ filled, state }: { filled: boolean; state: 'idle' | 'error' | 'su
     <Animated.View
       style={[
         styles.dot,
-        { borderColor: state === 'error' ? c.danger : c.textSecondary, backgroundColor: filled ? color : 'transparent' },
+        { borderColor: state === 'error' ? c.danger : c.textSecondary, backgroundColor: filled ? color : 'transparent', opacity: filled || state === 'error' ? 1 : 0.55 },
         filled ? { borderColor: color } : null,
         style,
       ]}

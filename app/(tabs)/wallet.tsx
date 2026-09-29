@@ -1,15 +1,18 @@
 import { router } from 'expo-router';
 import { Utensils } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSpring } from 'react-native-reanimated';
 import { PressableScale, StaggerIn } from '@/components/motion';
 import { Card, EmptyState, LoadGate, Screen, ScreenHeader, Skeleton, Text } from '@/components/ui';
 import { spendByDay } from '@/data/selectors';
 import { useApp } from '@/data/store';
 import { useResource } from '@/data/useResource';
 import { formatBaht } from '@/lib/format';
+import { springSoft } from '@/theme/motion';
 import { useNow } from '@/lib/useNow';
 import { BalanceCard } from '@/features/home/BalanceCard';
+import { CardDetailsSheet } from '@/features/wallet/CardDetailsSheet';
 import { SpendChart } from '@/features/wallet/SpendChart';
 import { TxList } from '@/features/wallet/TxList';
 import { WalletActions } from '@/features/wallet/WalletActions';
@@ -31,6 +34,14 @@ export default function WalletScreen() {
   const transactions = useApp((s) => s.wallet.transactions);
   const chart = useMemo(() => spendByDay(transactions, t), [transactions, t]);
   const weekTotal = chart.reduce((s, d) => s + d.total, 0);
+  const [details, setDetails] = useState(false);
+  const reduced = useReducedMotion();
+  const lift = useSharedValue(0);
+  useEffect(() => {
+    lift.value = reduced ? 0 : withSpring(details ? 1 : 0, springSoft);
+  }, [details, reduced, lift]);
+  // The card steps back and up as its details sheet rises in front of it.
+  const cardStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -lift.value * 10 }, { scale: 1 - lift.value * 0.05 }] }));
 
   return (
     <Screen
@@ -42,7 +53,9 @@ export default function WalletScreen() {
       <LoadGate status={res.status} retry={res.retry} skeleton={<WalletSkeleton />}>
         <View style={styles.stack}>
           <StaggerIn index={0}>
-            <BalanceCard size="lg" showActions={false} />
+            <Animated.View style={cardStyle}>
+              <BalanceCard size="lg" showActions={false} onDetails={() => setDetails(true)} />
+            </Animated.View>
           </StaggerIn>
           <StaggerIn index={1}>
             <WalletActions />
@@ -73,6 +86,7 @@ export default function WalletScreen() {
           )}
         </View>
       </LoadGate>
+      <CardDetailsSheet visible={details} onClose={() => setDetails(false)} />
     </Screen>
   );
 }

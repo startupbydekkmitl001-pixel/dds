@@ -2,13 +2,12 @@ import { ArrowDownLeft, Utensils } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { StaggerIn } from '@/components/motion';
-import { Icon, Text } from '@/components/ui';
+import { GlassLayers, Icon, Text } from '@/components/ui';
 import { groupByDay } from '@/data/selectors';
 import type { Transaction } from '@/data/types';
 import { now, toISODate } from '@/lib/clock';
 import { formatBaht, parseISODate, thaiDate, timeHM } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
-import { withAlpha } from '@/theme/tokens';
 
 function dayLabel(date: string): string {
   const today = now();
@@ -28,8 +27,8 @@ function TxRow({ tx }: { tx: Transaction }) {
       accessible
       accessibilityLabel={`${tx.title} ${timeHM(new Date(tx.at))} ${topup ? 'เติมเงิน' : 'ใช้จ่าย'} ${formatBaht(tx.amount)}`}
     >
-      <View style={[styles.chip, { backgroundColor: topup ? withAlpha(c.success, 0.14) : withAlpha(feature.wallet.fill, 0.3) }]}>
-        <Icon icon={topup ? ArrowDownLeft : Utensils} size={18} color={topup ? c.successText : feature.wallet.ink} />
+      <View style={[styles.chip, { backgroundColor: topup ? feature.leave.fill : feature.wallet.fill }]}>
+        <Icon icon={topup ? ArrowDownLeft : Utensils} size={18} color={topup ? feature.leave.ink : feature.wallet.ink} />
       </View>
       <View style={styles.flex}>
         <Text variant="body" numberOfLines={1}>
@@ -57,7 +56,7 @@ function TxRow({ tx }: { tx: Transaction }) {
 
 /** Transactions grouped by day ("วันนี้", "เมื่อวาน", then dates), newest first. */
 export function TxList({ transactions, limit }: { transactions: Transaction[]; limit?: number }) {
-  const { c } = useTheme();
+  const { c, radius, elevation } = useTheme();
   const groups = useMemo(() => {
     const all = groupByDay(transactions);
     if (limit === undefined) return all;
@@ -78,7 +77,8 @@ export function TxList({ transactions, limit }: { transactions: Transaction[]; l
           <Text variant="label" tone="secondary" style={styles.dayHead}>
             {dayLabel(g.date)}
           </Text>
-          <View style={[styles.group, { backgroundColor: c.card, borderColor: c.hairline }]}>
+          <View style={[styles.group, { borderRadius: radius.card, boxShadow: elevation.low }]}>
+            <GlassLayers radius={radius.card} />
             {g.items.map((t, i) => (
               <View key={t.id} style={i > 0 ? { borderTopWidth: 1, borderTopColor: c.hairline } : null}>
                 <TxRow tx={t} />
@@ -94,9 +94,9 @@ export function TxList({ transactions, limit }: { transactions: Transaction[]; l
 const styles = StyleSheet.create({
   list: { gap: 16 },
   dayHead: { marginBottom: 8 },
-  group: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
+  group: {},
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12 },
-  chip: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  chip: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1, gap: 2 },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 8 },

@@ -1,13 +1,16 @@
-import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, type Tabs } from 'expo-router';
 import { CalendarCheck, House, QrCode, UserRound, Wallet } from 'lucide-react-native';
-import type { ComponentProps } from 'react';
+import { useEffect, useState, type ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PressableScale } from '@/components/motion/PressableScale';
 import { haptic } from '@/lib/haptics';
+import { springSoft } from '@/theme/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { withAlpha } from '@/theme/tokens';
+import { white, withAlpha } from '@/theme/tokens';
+import { GlassLayers } from './Glass';
 import { Icon, type LucideIcon } from './Icon';
 import { Text } from './Text';
 
@@ -20,16 +23,50 @@ const ITEMS: Record<string, { label: string; icon: LucideIcon }> = {
   me: { label: 'ฉัน', icon: UserRound },
 };
 
-/** Frosted tab bar with a raised QR pay button in the centre (Air's glass chrome). */
+const BAR_H = 68;
+const INSET = 6;
+
+/**
+ * Floating frosted capsule. A lens of brighter glass glides under the active
+ * tab; the glossy ink QR button sits at the centre.
+ */
 export function TabBar({ state, navigation }: TabBarProps) {
-  const { c, scheme } = useTheme();
+  const { c, scheme, elevation } = useTheme();
   const insets = useSafeAreaInsets();
+  const reduced = useReducedMotion();
+  const [width, setWidth] = useState(0);
+  const count = state.routes.length;
+  const seg = width > 0 ? (width - INSET * 2) / count : 0;
+  const x = useSharedValue(0);
+  const ready = useSharedValue(false);
+
+  useEffect(() => {
+    if (seg === 0) return;
+    const to = state.index * seg;
+    if (!ready.value || reduced) {
+      x.value = to;
+      ready.value = true;
+      return;
+    }
+    x.value = withSpring(to, springSoft);
+  }, [state.index, seg, x, ready, reduced]);
+
+  const lens = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+  const lensFill = scheme === 'dark' ? withAlpha(white, 0.1) : withAlpha(c.secondary, 0.9);
 
   return (
-    <View style={styles.wrap} pointerEvents="box-none">
-      <BlurView intensity={40} tint={scheme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(c.canvas, 0.78), borderTopWidth: 1, borderTopColor: c.hairline }]} />
-      <View style={[styles.row, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+    <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom - 6, 12) }]} pointerEvents="box-none">
+      <View
+        style={[styles.capsule, { boxShadow: elevation.high }]}
+        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      >
+        <GlassLayers radius={BAR_H / 2} blur strong intensity={60} />
+        {seg > 0 ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.lens, { width: seg, backgroundColor: lensFill, borderColor: c.glassBorder }, lens]}
+          />
+        ) : null}
         {state.routes.map((route, i) => {
           if (route.name === 'pay') {
             return (
@@ -37,10 +74,14 @@ export function TabBar({ state, navigation }: TabBarProps) {
                 <PressableScale
                   accessibilityLabel="จ่ายเงินด้วย QR"
                   haptic="light"
+                  scaleTo={0.92}
                   onPress={() => router.push('/qr')}
-                  style={[styles.qr, { backgroundColor: c.primary, borderColor: c.canvas }]}
+                  style={[styles.qr, { backgroundColor: c.primary, boxShadow: elevation.low }]}
                 >
-                  <Icon icon={QrCode} color={c.onPrimary} size={26} />
+                  <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.qrGloss]}>
+                    <LinearGradient colors={[withAlpha(white, 0.28), withAlpha(white, 0)]} locations={[0, 0.6]} style={StyleSheet.absoluteFill} />
+                  </View>
+                  <Icon icon={QrCode} color={c.onPrimary} size={24} />
                 </PressableScale>
               </View>
             );
@@ -66,10 +107,9 @@ export function TabBar({ state, navigation }: TabBarProps) {
               style={styles.item}
             >
               <Icon icon={item.icon} color={color} size={22} strokeWidth={focused ? 2.1 : 1.75} />
-              <Text variant="caption" color={color} numberOfLines={1} maxFontSizeMultiplier={1.3}>
+              <Text variant="caption" size={11} color={color} numberOfLines={1} maxFontSizeMultiplier={1.2}>
                 {item.label}
               </Text>
-              <View style={[styles.dot, { backgroundColor: focused ? c.text : 'transparent' }]} />
             </PressableScale>
           );
         })}
@@ -79,9 +119,10 @@ export function TabBar({ state, navigation }: TabBarProps) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  row: { flexDirection: 'row', paddingTop: 8, paddingHorizontal: 6 },
-  item: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', gap: 2, minHeight: 48 },
-  qr: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', marginTop: -26, borderWidth: 4 },
-  dot: { width: 4, height: 4, borderRadius: 2, marginTop: 2 },
+  wrap: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 14 },
+  capsule: { height: BAR_H, borderRadius: BAR_H / 2, flexDirection: 'row', alignItems: 'center', paddingHorizontal: INSET, maxWidth: 520, width: '100%', alignSelf: 'center' },
+  lens: { position: 'absolute', left: INSET, top: INSET, bottom: INSET, borderRadius: (BAR_H - INSET * 2) / 2, borderWidth: 1 },
+  item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 1, height: BAR_H - INSET * 2 },
+  qr: { width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' },
+  qrGloss: { borderRadius: 25, overflow: 'hidden' },
 });

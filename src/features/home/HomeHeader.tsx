@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Bell } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
-import { IconButton, Text } from '@/components/ui';
+import { IconButton, Text, ThemeToggle } from '@/components/ui';
 import { unreadCount } from '@/data/selectors';
 import { useApp } from '@/data/store';
 import { thaiDate } from '@/lib/format';
@@ -23,7 +23,10 @@ export function HomeHeader({ now }: { now: Date }) {
         </Text>
         <Text variant="displayItalic">{nickname}</Text>
       </View>
-      <IconButton icon={Bell} label="การแจ้งเตือน" badge={unread} onPress={() => router.push('/notifications')} />
+      <View style={styles.actions}>
+        <ThemeToggle />
+        <IconButton icon={Bell} label="การแจ้งเตือน" badge={unread} onPress={() => router.push('/notifications')} />
+      </View>
     </View>
   );
 }
@@ -31,4 +34,5 @@ export function HomeHeader({ now }: { now: Date }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingTop: 4, paddingBottom: 18 },
   flex: { flex: 1 },
+  actions: { flexDirection: 'row', gap: 10 },
 });

@@ -10,12 +10,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { dur } from '@/theme/motion';
-import { prism, withAlpha } from '@/theme/tokens';
+import { prism, white, withAlpha } from '@/theme/tokens';
 import { useTilt } from './useTilt';
 
 /**
- * Vivid+Co's prism: a slow diagonal band of RGB-split light sweeping across a
- * card, nudged by the phone's tilt. Purely decorative; hidden under Reduce Motion.
+ * Pastel iridescence: a slow diagonal band of pearly light sweeping across a
+ * glossy card, nudged by the phone's tilt. Decorative; hidden under Reduce Motion.
  */
 export function PrismShimmer({ radius, intensity = 0.18 }: { radius: number; intensity?: number }) {
   const reduced = useReducedMotion();
@@ -41,9 +41,10 @@ export function PrismShimmer({ radius, intensity = 0.18 }: { radius: number; int
 
   const colors = [
     'transparent',
-    withAlpha(prism[0], intensity),
-    withAlpha(prism[1], intensity),
-    withAlpha(prism[2], intensity * 0.8),
+    withAlpha(prism[0], intensity * 1.6),
+    withAlpha(white, intensity * 2.2),
+    withAlpha(prism[1], intensity * 1.6),
+    withAlpha(prism[2], intensity * 1.3),
     'transparent',
   ] as const;
 

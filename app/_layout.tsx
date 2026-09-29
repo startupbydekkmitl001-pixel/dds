@@ -6,6 +6,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ThemeFade } from '@/components/motion';
 import { ToastHost } from '@/components/ui';
 import { AlertToaster } from '@/features/notifications/AlertToaster';
 import { startSimulations } from '@/data/simulations';
@@ -55,11 +56,13 @@ function RootStack() {
             name="announcement/[id]"
             options={{ presentation: 'formSheet', sheetAllowedDetents: [0.6, 1], sheetGrabberVisible: true, sheetCornerRadius: 28 }}
           />
+          <Stack.Screen name="settings/index" />
           <Stack.Screen name="dev/kit" />
         </Stack.Protected>
       </Stack>
       <AlertToaster />
       <ToastHost />
+      <ThemeFade />
     </>
   );
 }

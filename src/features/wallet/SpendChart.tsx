@@ -19,7 +19,7 @@ function Bar({ height, index, color }: { height: number; index: number; color: s
   return <Animated.View style={[styles.bar, { backgroundColor: color }, style]} />;
 }
 
-/** 7-day spending bars; today is full Orchid, earlier days softened. */
+/** 7-day spending bars in soft rose light; today glows, earlier days are frosted. */
 export function SpendChart({ data }: { data: { date: string; total: number }[] }) {
   const { feature } = useTheme();
   const max = Math.max(1, ...data.map((d) => d.total));
@@ -38,7 +38,7 @@ export function SpendChart({ data }: { data: { date: string; total: number }[] }
                 <Bar
                   height={Math.max(4, (d.total / max) * MAX_H)}
                   index={i}
-                  color={isToday ? feature.wallet.fill : withAlpha(feature.wallet.fill, 0.45)}
+                  color={isToday ? feature.wallet.glow : withAlpha(feature.wallet.glow, 0.38)}
                 />
               </View>
               <Text variant="caption" tone={isToday ? 'primary' : 'secondary'}>
@@ -56,5 +56,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
   col: { flex: 1, alignItems: 'center', gap: 6 },
   track: { height: MAX_H, justifyContent: 'flex-end', width: '100%', alignItems: 'center' },
-  bar: { width: '70%', borderRadius: 8 },
+  bar: { width: '62%', borderRadius: 999, minHeight: 6 },
 });

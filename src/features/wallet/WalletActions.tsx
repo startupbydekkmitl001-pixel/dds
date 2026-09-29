@@ -1,34 +1,30 @@
 import { router } from 'expo-router';
-import { Lock, LockOpen, Plus, QrCode, Receipt } from 'lucide-react-native';
+import { Plus, QrCode, Receipt, Snowflake, Sun } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PressableScale } from '@/components/motion';
-import { ConfirmSheet, Icon, Text, toast, type LucideIcon } from '@/components/ui';
+import { ConfirmSheet, GlassLayers, Icon, Text, toast, type LucideIcon } from '@/components/ui';
 import { useApp } from '@/data/store';
 import { haptic } from '@/lib/haptics';
 import { useTheme } from '@/theme/ThemeProvider';
 import { withAlpha } from '@/theme/tokens';
 
 function Action({ icon, label, onPress, tint }: { icon: LucideIcon; label: string; onPress: () => void; tint?: string }) {
-  const { c } = useTheme();
+  const { elevation } = useTheme();
   return (
     <PressableScale accessibilityLabel={label} haptic="selection" onPress={onPress} style={styles.action}>
-      <View
-        style={[
-          styles.circle,
-          { backgroundColor: tint ? withAlpha(tint, 0.12) : c.card, borderColor: tint ? withAlpha(tint, 0.4) : c.hairline },
-        ]}
-      >
-        <Icon icon={icon} size={24} color={tint ?? c.text} />
+      <View style={[styles.circle, { boxShadow: elevation.low }]}>
+        <GlassLayers radius={30} tint={tint ? withAlpha(tint, 0.35) : undefined} />
+        <Icon icon={icon} size={22} />
       </View>
-      <Text variant="caption" center numberOfLines={1} color={tint}>
+      <Text variant="caption" center numberOfLines={1}>
         {label}
       </Text>
     </PressableScale>
   );
 }
 
-/** Four wallet actions; freeze/unfreeze goes through a confirmation sheet. */
+/** Four glass wallet actions; freeze/unfreeze goes through a confirmation sheet. */
 export function WalletActions() {
   const { c } = useTheme();
   const frozen = useApp((s) => s.wallet.frozen);
@@ -48,9 +44,9 @@ export function WalletActions() {
         <Action icon={Plus} label="เติมเงิน" onPress={() => router.push('/topup')} />
         <Action icon={QrCode} label="จ่าย QR" onPress={() => router.push('/qr')} />
         <Action
-          icon={frozen ? LockOpen : Lock}
+          icon={frozen ? Sun : Snowflake}
           label={frozen ? 'ยกเลิกอายัด' : 'อายัดบัตร'}
-          tint={frozen ? c.dangerText : undefined}
+          tint={frozen ? c.frost : undefined}
           onPress={() => setConfirm(true)}
         />
         <Action icon={Receipt} label="ตรวจสอบสลิป" onPress={() => router.push('/slip-check')} />
@@ -75,5 +71,5 @@ export function WalletActions() {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between' },
   action: { alignItems: 'center', gap: 8, width: 78 },
-  circle: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  circle: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center' },
 });

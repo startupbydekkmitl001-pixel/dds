@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { StaggerIn } from '@/components/motion';
 import { FEATURE_ICON, Tile } from '@/components/ui';
 
-/** Origin's colour-coded 2×2 feature grid, each tile carrying a live number. */
+/** Bento 2×2 of pastel glass tiles, each with a live number (after the plan-picker reference). */
 export function FeatureTiles({
   streak,
   score,
@@ -21,6 +21,7 @@ export function FeatureTiles({
         <StaggerIn index={0} style={styles.cell}>
           <Tile
             feature="attendance"
+            index={0}
             icon={FEATURE_ICON.attendance}
             label="เวลาเรียน"
             value={`${streak} วัน`}
@@ -31,6 +32,7 @@ export function FeatureTiles({
         <StaggerIn index={1} style={styles.cell}>
           <Tile
             feature="behavior"
+            index={1}
             icon={FEATURE_ICON.behavior}
             label="พฤติกรรม"
             value={String(score)}
@@ -43,6 +45,7 @@ export function FeatureTiles({
         <StaggerIn index={2} style={styles.cell}>
           <Tile
             feature="leave"
+            index={2}
             icon={FEATURE_ICON.leave}
             label="ใบลา"
             value={pending > 0 ? String(pending) : undefined}
@@ -53,6 +56,7 @@ export function FeatureTiles({
         <StaggerIn index={3} style={styles.cell}>
           <Tile
             feature="assessments"
+            index={3}
             icon={FEATURE_ICON.assessments}
             label="แบบประเมิน"
             value={due > 0 ? String(due) : undefined}

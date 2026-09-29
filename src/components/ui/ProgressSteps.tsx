@@ -29,7 +29,7 @@ export function ProgressSteps({ steps, current }: { steps: string[]; current: nu
     >
       {steps.map((label, i) => (
         <View key={label} style={styles.step}>
-          <Segment active={i <= current} color={c.text} track={c.hairline} />
+          <Segment active={i <= current} color={c.accent} track={c.hairline} />
           <Text variant="caption" tone={i === current ? 'primary' : 'secondary'} numberOfLines={1}>
             {`${i + 1}. ${label}`}
           </Text>

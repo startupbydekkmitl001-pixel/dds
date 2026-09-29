@@ -6,7 +6,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { Icon, type LucideIcon } from './Icon';
 import { Text } from './Text';
 
-/** 56pt+ row: icon chip, title/subtitle, trailing value, chevron when tappable. */
+/** 56pt+ row: pastel icon chip, title/subtitle, trailing value, chevron when tappable. */
 export function ListRow({
   icon,
   iconColor,
@@ -30,7 +30,7 @@ export function ListRow({
   right?: ReactNode;
   accessibilityHint?: string;
 }) {
-  const { c } = useTheme();
+  const { c, feature } = useTheme();
   const showChevron = chevron ?? !!onPress;
   return (
     <PressableScale
@@ -44,8 +44,8 @@ export function ListRow({
       style={styles.row}
     >
       {icon ? (
-        <View style={[styles.chip, { backgroundColor: iconBg ?? c.pressed }]}>
-          <Icon icon={icon} size={18} color={iconColor ?? c.text} />
+        <View style={[styles.chip, { backgroundColor: iconBg ?? feature.attendance.fill }]}>
+          <Icon icon={icon} size={18} color={iconColor ?? feature.attendance.ink} />
         </View>
       ) : null}
       <View style={styles.body}>
@@ -68,7 +68,7 @@ export function ListRow({
 }
 
 const styles = StyleSheet.create({
-  row: { minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 10 },
-  chip: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  row: { minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingVertical: 11 },
+  chip: { width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, gap: 1 },
 });

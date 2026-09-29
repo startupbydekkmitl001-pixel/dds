@@ -1,14 +1,18 @@
 /**
- * Design tokens — "Daylight editorial" (spec §4): Superhuman's parchment and
- * wine, Origin's colour-coded feature tiles and obsidian dark mode, Vivid+Co's
- * prism. Components read colours only from here (via useTheme).
+ * Design tokens — "Frosted pastel": frosted, glossy glass floating over soft
+ * ambient light. Muted pastels, one deep ink for emphasis, soft diffuse shadows.
+ * Components read colours only from here (via useTheme). Every text pair is
+ * contrast-checked against the worst case: glass over the brightest ambient glow.
  */
 import type { AttendanceStatus, FeatureKey } from '@/data/types';
 
 export interface ColorTokens {
+  /** Base colour beneath the ambient light. */
   canvas: string;
+  /** Opaque stand-in for glass over the canvas (QR paper frames, contrast checks). */
   card: string;
   cardRaised: string;
+  /** Separators, tracks and quiet outlines. */
   hairline: string;
   text: string;
   textSecondary: string;
@@ -18,6 +22,7 @@ export interface ColorTokens {
   onSecondary: string;
   link: string;
   pressed: string;
+  /** Mid stop of the student-pass gradient (see `idCard`). */
   idCardBg: string;
   idCardText: string;
   danger: string;
@@ -28,88 +33,165 @@ export interface ColorTokens {
   /** Success colour safe for text (positive amounts). */
   successText: string;
   warning: string;
-  /** Translucent veil for modal backdrops. */
+  /** Translucent veil for modal backdrops (sits over a blur). */
   scrim: string;
+
+  /** Frosted card fill. */
+  glass: string;
+  /** Denser fill for chrome and sheets that sit over moving content. */
+  glassStrong: string;
+  /** Bright rim that catches the light. */
+  glassBorder: string;
+  /** Specular gloss at the top edge of glass. */
+  gloss: string;
+  /** Soft, tinted, diffuse shadow colour. */
+  shadow: string;
+  /** Lavender accent for selection, focus and badges (never body text). */
+  accent: string;
+  onAccent: string;
+  /** Ambient light orbs behind every screen (#rrggbb). */
+  ambient: readonly [string, string, string, string];
+  /** Peak opacity of an ambient orb. */
+  ambientOpacity: number;
+  /** Student-pass gradient stops. */
+  idCard: readonly [string, string, string];
+  /** Icy tint for the frozen card. */
+  frost: string;
+  /** Strength of the icy tint (kept low enough that text on a frozen card stays AA). */
+  frostAlpha: number;
+  /** Snowflakes and ice crystals: must read against the frosted card. */
+  frostInk: string;
 }
 
+/** Muted status hues: distinguishable, never neon; always paired with a label or symbol. */
 export const statusColor: Record<AttendanceStatus, string> = {
-  present: '#2f9e6a',
-  late: '#d99a1e',
-  noScan: '#8a7a66',
-  sick: '#3b6fd8',
-  personal: '#3aa3e0',
-  absent: '#e0473e',
+  present: '#4aa77c',
+  late: '#d9a043',
+  noScan: '#9a9189',
+  sick: '#6c8ee0',
+  personal: '#5fb3d6',
+  absent: '#df746d',
 };
 
 export const palette: { light: ColorTokens; dark: ColorTokens } = {
   light: {
-    canvas: '#f2f0eb',
-    card: '#ffffff',
+    canvas: '#eef0f7',
+    card: '#f8f9fc',
     cardRaised: '#ffffff',
-    hairline: '#e3e3e2',
-    text: '#292827',
-    textSecondary: '#666666',
-    primary: '#421d24',
+    hairline: '#dfe1ec',
+    text: '#1c1d2b',
+    textSecondary: '#4f5369',
+    primary: '#262840',
     onPrimary: '#ffffff',
-    secondary: '#d4c7ff',
-    onSecondary: '#292827',
-    link: '#714cb6',
-    pressed: '#e9e6df',
-    idCardBg: '#421d24',
-    idCardText: '#ffffff',
+    secondary: '#e4e1fb',
+    onSecondary: '#1c1d2b',
+    link: '#4b40b5',
+    pressed: '#e3e4ef',
+    idCardBg: '#dbe8f8',
+    idCardText: '#1c1d2b',
     danger: statusColor.absent,
-    dangerText: '#b3261e',
+    dangerText: '#a3261f',
     onDanger: '#ffffff',
     success: statusColor.present,
-    successText: '#1c6e47',
+    successText: '#16663f',
     warning: statusColor.late,
-    scrim: 'rgba(41,40,39,0.38)',
+    scrim: 'rgba(38,40,64,0.16)',
+
+    glass: 'rgba(255,255,255,0.58)',
+    glassStrong: 'rgba(250,250,255,0.78)',
+    glassBorder: 'rgba(255,255,255,0.85)',
+    gloss: 'rgba(255,255,255,0.75)',
+    shadow: 'rgba(72,66,140,0.10)',
+    accent: '#8b82e6',
+    onAccent: '#ffffff',
+    ambient: ['#c9c2f2', '#bcd6f4', '#c4e8d8', '#f3d2da'],
+    ambientOpacity: 0.5,
+    idCard: ['#e6e2fb', '#dbe8f8', '#dcf1e8'],
+    frost: '#cfe3f7',
+    frostAlpha: 0.32,
+    frostInk: '#7fa7d6',
   },
   dark: {
-    canvas: '#0f1011',
-    card: '#1c1c1d',
-    cardRaised: '#2e2e2e',
-    hairline: '#2e2e2e',
-    text: '#f5f5f7',
-    textSecondary: '#9f9fa0',
-    primary: '#ffffff',
-    onPrimary: '#000000',
-    secondary: '#3f4041',
-    onSecondary: '#f5f5f7',
-    link: '#b9a8ff',
-    pressed: '#3f4041',
-    idCardBg: '#2e2e2e',
-    idCardText: '#f5f5f7',
+    canvas: '#0d0e18',
+    card: '#20212a',
+    cardRaised: '#2a2b3a',
+    hairline: '#2a2c40',
+    text: '#f1f1f8',
+    textSecondary: '#b1b4ca',
+    primary: '#e9e7ff',
+    onPrimary: '#171830',
+    secondary: '#2d2a52',
+    onSecondary: '#f1f1f8',
+    link: '#b9b1ff',
+    pressed: '#262840',
+    idCardBg: '#1d2e4a',
+    idCardText: '#f1f1f8',
     danger: statusColor.absent,
-    dangerText: '#ff8a80',
-    onDanger: '#000000',
+    dangerText: '#ff9d94',
+    onDanger: '#171830',
     success: statusColor.present,
-    successText: '#6fd6a2',
+    successText: '#80dab0',
     warning: statusColor.late,
-    scrim: 'rgba(0,0,0,0.6)',
+    scrim: 'rgba(4,4,12,0.42)',
+
+    glass: 'rgba(255,255,255,0.075)',
+    glassStrong: 'rgba(24,25,40,0.72)',
+    glassBorder: 'rgba(255,255,255,0.13)',
+    gloss: 'rgba(255,255,255,0.10)',
+    shadow: 'rgba(0,0,0,0.42)',
+    accent: '#9d95f0',
+    onAccent: '#171830',
+    ambient: ['#3f3a78', '#1f4262', '#1d4a44', '#4d2c4c'],
+    ambientOpacity: 0.55,
+    idCard: ['#2a2750', '#1d2e4a', '#1b3834'],
+    frost: '#9cc2e8',
+    frostAlpha: 0.08,
+    frostInk: '#ffffff',
   },
 };
 
-/** One Origin colour per feature, used everywhere that feature appears. */
-export const feature: Record<FeatureKey, { fill: string; ink: string }> = {
-  attendance: { fill: '#847dff', ink: '#16123f' },
-  wallet: { fill: '#dd90d8', ink: '#3a1238' },
-  behavior: { fill: '#90b8f0', ink: '#0c2a52' },
-  leave: { fill: '#d1c9ff', ink: '#2a2270' },
-  assessments: { fill: '#4b49aa', ink: '#ffffff' },
-  announcements: { fill: '#0c4243', ink: '#ffffff' },
+export interface FeatureColor {
+  /** Pastel tile / chip fill. */
+  fill: string;
+  /** Text and icons on `fill`. */
+  ink: string;
+  /** Soft light used for orbs and glows inside tiles. */
+  glow: string;
+}
+
+/** One pastel per feature, used everywhere that feature appears; deepened for dark mode. */
+export const features: { light: Record<FeatureKey, FeatureColor>; dark: Record<FeatureKey, FeatureColor> } = {
+  light: {
+    attendance: { fill: '#dcd7fb', ink: '#2e2870', glow: '#a99cf0' },
+    wallet: { fill: '#f8dce5', ink: '#6a2442', glow: '#eea8c0' },
+    behavior: { fill: '#d4e5f8', ink: '#163e66', glow: '#9cc3ee' },
+    leave: { fill: '#d5efe4', ink: '#1b5440', glow: '#9ed9c0' },
+    assessments: { fill: '#f8e7cb', ink: '#5c4211', glow: '#f0c98e' },
+    announcements: { fill: '#d2eaee', ink: '#154a55', glow: '#92cfd8' },
+  },
+  dark: {
+    attendance: { fill: '#2b2850', ink: '#dcd7ff', glow: '#7b6fd0' },
+    wallet: { fill: '#3b2536', ink: '#f9d3e0', glow: '#c27792' },
+    behavior: { fill: '#1f3149', ink: '#d0e4fb', glow: '#6d9bcf' },
+    leave: { fill: '#1c3a31', ink: '#caefdf', glow: '#6fb597' },
+    assessments: { fill: '#3a3020', ink: '#f6e2bd', glow: '#c9a265' },
+    announcements: { fill: '#1a3a41', ink: '#c7ecf1', glow: '#63a9b4' },
+  },
 };
 
 /** QR codes stay dark-on-light in both themes; inverted codes scan poorly. */
 export const qr = { ink: '#000000', paper: '#ffffff' } as const;
 
-/** Vivid+Co RGB dispersion — only inside the prism shimmer. */
-export const prism: [string, string, string] = ['#ff2a2a', '#2a7fff', '#2aff2a'];
+/** Pastel iridescence — the sheen that travels across glossy cards. */
+export const prism: [string, string, string] = ['#f6c9dd', '#c6d6fb', '#c4eedd'];
+
+/** Pure white, for specular highlights and snow. */
+export const white = '#ffffff';
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24, x3: 32, x4: 40, x5: 48 } as const;
 export const screenPad = 20;
 
-export const radius = { tile: 28, card: 16, button: 16, input: 12, chip: 999, sheet: 28 } as const;
+export const radius = { tile: 28, card: 24, button: 999, input: 16, chip: 999, sheet: 32 } as const;
 
 /** Apply an alpha (0–1) to a #rrggbb colour. */
 export function withAlpha(hex: string, alpha: number): string {

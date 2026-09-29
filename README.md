@@ -40,16 +40,34 @@ The web preview supports the app flows with fallbacks for device-only features. 
 - **Wallet:** choose **เติมเงิน**, enter an amount from 10 to 2,000 baht, continue through the sample transfer details, then select **ใช้สลิปตัวอย่าง (เดโม)**. Review the result and transaction history.
 - **QR payment:** open **จ่าย QR** and hold the payment QR for about a second to simulate a 35-baht purchase. Freezing the card prevents purchases; unfreeze it from Wallet or the QR screen.
 - **Attendance and leave:** inspect a day, submit a leave request with school days and a reason, and watch its simulated approval timeline. Pending top-ups and leave requests continue progressing while the app runs and overdue work is processed after reopening.
-- **Me:** tilt or flip the graphite-and-silver Rajadamri student pass to reveal the student-ID QR. The anonymous illustrated avatar uses no real student photo. Tap **จ่าย QR**, **ทางลัด**, or **ข้อมูลฉัน** below the card to expand payment, attendance/leave, or profile actions. Inspect behavior, complete an assessment, and open **ตั้งค่า**.
-- **Settings:** switch between monochrome light and dark appearance, or use the sun/moon button on Home; change the PIN by entering the current PIN, new PIN, and confirmation; configure in-app alert categories; or log out. An older saved system-theme preference still resolves to the device appearance until a mode is selected.
+- **Me:** tilt or flip the pastel holographic Rajadamri student pass to reveal the student-ID QR. The anonymous illustrated avatar uses no real student photo. Tap **จ่าย QR**, **ทางลัด**, or **ข้อมูลฉัน** below the card to expand payment, attendance/leave, or profile actions. Inspect behavior, complete an assessment, and open **ตั้งค่า**.
+- **Settings:** choose **ตามระบบ**, **สว่าง**, or **มืด** from live previews, or use the sun/moon button on Home; turn Face ID sign-in on or off; configure in-app alert categories; or log out. **ตามระบบ** follows the device appearance.
 
 App data persists locally. A changed PIN replaces `123456` until it is changed again or reset from the demo controls. Five incorrect login attempts trigger a 30-second lockout.
 
 ## App identity and typography
 
-The app uses a strictly monochrome palette: white paper, black graphite, silver reflections, and translucent glass. **Settings → appearance** switches between light, dark, and the device setting. Status text and distinct attendance symbols preserve meaning without color. Brand assets and generation notes are in [`assets/brand/`](assets/brand/README.md). Native icon and splash changes require a new app build; Expo Go does not verify the final launcher appearance.
+The app uses a frosted-pastel glass look: translucent cards over soft ambient light, in muted lavender, sky, mint, rose, and apricot, with one deep ink for primary actions. **Settings → การแสดงผล** switches between light, dark, and the device setting. Status text and distinct attendance symbols preserve meaning without color. Brand assets and generation notes are in [`assets/brand/`](assets/brand/README.md). Native icon and splash changes require a new app build; Expo Go does not verify the final launcher appearance.
 
 Thai headings and reading text use IBM Plex Sans Thai with room for stacked tone marks. IBM Plex Mono is reserved for numeric data and Latin labels. Reduced motion replaces the card flip and action-panel movement with opacity changes. New demo data uses Rajadamri as its school name; previously saved sample records are kept until a demo reset.
+
+## Frosted pastel design system
+
+Every color comes from `src/theme/tokens.ts`. The contrast tests in `src/theme/__tests__/theme.test.ts` check text against its worst background in both themes: glass over the brightest ambient light, and the frozen card's icy tint.
+
+| Piece | Where | What it does |
+| --- | --- | --- |
+| Ambient light | `components/motion/AmbientLight.tsx`, `Aurora.tsx` | Four soft pastel light pools behind every screen. They drift slowly and parallax gently while scrolling, and stay still under Reduce Motion. |
+| Glass | `components/ui/Glass.tsx` | A translucent fill, a glossy highlight at the top edge, a bright rim, and a soft tinted shadow. Blur is used only where content moves underneath: the tab bar, compact title bar, sheets, and toasts. It is available on iOS and web; Android uses a denser fill instead. iOS Reduce Transparency makes glass opaque. |
+| Floating tab bar | `components/ui/TabBar.tsx` | A frosted capsule with a lens that springs under the active tab, and a glossy ink QR button. |
+| Glass sheet | `components/ui/GlassSheet.tsx` | The background blurs and dims, and the sheet slides up. Drag it down or tap outside to close. `ConfirmSheet` and card details use it. |
+| Rolling balance | `components/motion/RollingNumber.tsx` | Odometer digits roll into place. |
+| Frozen card | `components/motion/FrostOverlay.tsx` | An icy tint, frosted edges, ice crystals, and falling snow while the card is frozen. |
+| Bento tiles | `components/ui/Tile.tsx`, `motion/GlossOrb.tsx` | Each feature has a pastel scene with a floating glossy sphere. |
+| Today's journey | `features/home/Journey.tsx` | A route from home to school, with a glowing dot for today's status. |
+| Theme switch | `components/ui/ThemeToggle.tsx`, `motion/ThemeFade.tsx` | The sun sets as the moon rises, then the old background fades into the new theme. |
+
+Wallet's eye button opens **รายละเอียดบัตร**. The student ID is masked until revealed and is masked again when the sheet closes. Each value has an in-place **คัดลอก** confirmation.
 
 ## Video-inspired interaction refresh
 

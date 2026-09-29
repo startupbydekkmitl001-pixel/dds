@@ -1,11 +1,11 @@
 import { BlurView } from 'expo-blur';
-import { Check, Lock } from 'lucide-react-native';
+import { Check, Snowflake } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import QRCode from 'react-native-qrcode-svg';
-import { BorderTrace, NumberTicker } from '@/components/motion';
-import { Button, ConfirmSheet, Icon, Text, toast } from '@/components/ui';
+import { BorderTrace, FrostOverlay, NumberTicker } from '@/components/motion';
+import { Button, ConfirmSheet, GlassLayers, Icon, Text, toast } from '@/components/ui';
 import { useApp } from '@/data/store';
 import { useMaxBrightness } from '@/lib/brightness';
 import { now } from '@/lib/clock';
@@ -23,7 +23,7 @@ const DEMO_PRICE = 35;
 
 /** Rotating pay QR inside a 60s countdown trace; long-press simulates a canteen scan (demo). */
 export function PayQR() {
-  const { c, scheme } = useTheme();
+  const { c, scheme, elevation } = useTheme();
   const student = useApp((s) => s.student);
   const balance = useApp((s) => s.wallet.balance);
   const frozen = useApp((s) => s.wallet.frozen);
@@ -89,7 +89,7 @@ export function PayQR() {
         accessibilityRole="image"
         accessibilityLabel="QR สำหรับจ่ายเงิน"
         accessibilityHint="กดค้างเพื่อจำลองการจ่ายเงินที่ร้านค้า"
-        style={[styles.frame, { backgroundColor: qr.paper }]}
+        style={[styles.frame, { backgroundColor: qr.paper, boxShadow: elevation.high }]}
       >
         <Animated.View style={codeStyle}>
           <QRCode value={token} size={CODE} color={qr.ink} backgroundColor={qr.paper} ecl="M" />
@@ -100,10 +100,9 @@ export function PayQR() {
           <View style={[StyleSheet.absoluteFill, styles.overlay]}>
             <BlurView intensity={30} tint={scheme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
             <View style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(c.card, 0.6) }]} />
-            <Icon icon={Lock} size={32} color={c.dangerText} />
-            <Text variant="label" color={c.dangerText}>
-              บัตรถูกอายัด
-            </Text>
+            <FrostOverlay radius={28} />
+            <Icon icon={Snowflake} size={32} />
+            <Text variant="label">บัตรถูกอายัด</Text>
           </View>
         ) : null}
 
@@ -130,7 +129,8 @@ export function PayQR() {
         </Text>
       )}
 
-      <View style={[styles.balance, { borderColor: c.hairline, backgroundColor: c.card }]}>
+      <View style={[styles.balance, { boxShadow: elevation.low }]}>
+        <GlassLayers radius={20} />
         <Text variant="label" tone="secondary">
           ยอดเงินคงเหลือ
         </Text>
@@ -161,9 +161,9 @@ export function PayQR() {
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', gap: 12 },
-  frame: { width: FRAME, height: FRAME, borderRadius: 28, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginVertical: 8 },
-  overlay: { alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 28, padding: 16 },
+  frame: { width: FRAME, height: FRAME, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginVertical: 8 },
+  overlay: { alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 28, padding: 16, overflow: 'hidden' },
   checkBox: { width: 80, height: 80, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  balance: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch', borderWidth: 1, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14 },
+  balance: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch', borderRadius: 20, paddingHorizontal: 18, paddingVertical: 16 },
   stretch: { alignSelf: 'stretch' },
 });
