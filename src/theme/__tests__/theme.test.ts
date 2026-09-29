@@ -28,6 +28,11 @@ describe.each(['light', 'dark'] as const)('%s palette meets WCAG AA', (mode) => 
     expect(contrastRatio(c.onSecondary, c.secondary)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(c.idCardText, c.idCardBg)).toBeGreaterThanOrEqual(4.5);
   });
+  test('destructive actions', () => {
+    expect(contrastRatio(c.onDanger, c.dangerText)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(c.dangerText, c.card)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(c.dangerText, c.canvas)).toBeGreaterThanOrEqual(4.5);
+  });
 });
 
 test('every feature tile ink is readable on its fill', () => {

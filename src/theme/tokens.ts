@@ -21,6 +21,9 @@ export interface ColorTokens {
   idCardBg: string;
   idCardText: string;
   danger: string;
+  /** Danger colour safe for text and destructive button fills. */
+  dangerText: string;
+  onDanger: string;
   success: string;
   warning: string;
   /** Translucent veil for modal backdrops. */
@@ -53,6 +56,8 @@ export const palette: { light: ColorTokens; dark: ColorTokens } = {
     idCardBg: '#421d24',
     idCardText: '#ffffff',
     danger: statusColor.absent,
+    dangerText: '#b3261e',
+    onDanger: '#ffffff',
     success: statusColor.present,
     warning: statusColor.late,
     scrim: 'rgba(41,40,39,0.38)',
@@ -73,6 +78,8 @@ export const palette: { light: ColorTokens; dark: ColorTokens } = {
     idCardBg: '#2e2e2e',
     idCardText: '#f5f5f7',
     danger: statusColor.absent,
+    dangerText: '#ff8a80',
+    onDanger: '#000000',
     success: statusColor.present,
     warning: statusColor.late,
     scrim: 'rgba(0,0,0,0.6)',

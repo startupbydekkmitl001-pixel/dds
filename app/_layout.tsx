@@ -6,6 +6,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ToastHost } from '@/components/ui';
 import { startSimulations } from '@/data/simulations';
 import { appStore, useApp } from '@/data/store';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
@@ -24,6 +25,7 @@ function RootStack() {
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.canvas } }} />
+      <ToastHost />
     </>
   );
 }
