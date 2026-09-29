@@ -27,7 +27,7 @@ function inAnySemester(date: string): boolean {
   return Object.values(SEMESTERS).some((s) => s.start <= date && date <= s.end);
 }
 
-export function todayInfo(d: AppData, demo: DemoSettings, now: Date): TodayInfo {
+export function todayInfo(d: Pick<AppData, 'leaves'>, demo: DemoSettings, now: Date): TodayInfo {
   const today = toISODate(now);
   if (!isSchoolDay(today) || !inAnySemester(today)) return { kind: 'noSchool' };
   const leave = d.leaves.find(
@@ -39,7 +39,12 @@ export function todayInfo(d: AppData, demo: DemoSettings, now: Date): TodayInfo 
   return { kind: 'arrived', checkIn: DEMO_CHECK_IN, onTime: DEMO_CHECK_IN <= GATE_CLOSE };
 }
 
-export function semesterDays(d: AppData, id: SemesterId, demo: DemoSettings, now: Date): AttendanceDay[] {
+export function semesterDays(
+  d: Pick<AppData, 'leaves' | 'attendance'>,
+  id: SemesterId,
+  demo: DemoSettings,
+  now: Date,
+): AttendanceDay[] {
   const sem = SEMESTERS[id];
   const today = toISODate(now);
   const days = [...d.attendance[id]];
