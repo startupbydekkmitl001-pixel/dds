@@ -44,6 +44,17 @@ test('five unclaimed bank transfers, newest first', () => {
   expect(t[0].at >= t[1].at).toBe(true);
 });
 
+test('bank transfers happen in daytime hours and before now', () => {
+  for (const later of [N, new Date(2026, 8, 29, 23, 30), new Date(2026, 9, 5, 7, 5)]) {
+    for (const tr of buildSeed(later).wallet.transfers) {
+      const h = new Date(tr.at).getHours();
+      expect(h).toBeGreaterThanOrEqual(7);
+      expect(h).toBeLessThan(20);
+      expect(new Date(tr.at).getTime()).toBeLessThanOrEqual(later.getTime());
+    }
+  }
+});
+
 test('behavior nets to a full score', () => {
   expect(behaviorScore(buildSeed(N).behavior)).toBe(100);
 });

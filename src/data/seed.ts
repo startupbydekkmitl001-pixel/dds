@@ -148,10 +148,11 @@ function buildWallet(now: Date, rand: () => number): Wallet {
   tx.sort((a, b) => (a.at < b.at ? 1 : -1));
   const balance = tx.reduce((sum, t) => sum + (t.kind === 'topup' ? t.amount : -t.amount), 0);
 
+  // Bank-side transfers from the last few days, in daytime hours (07:00–19:59) and never in the future.
   const transfers: BankTransfer[] = [];
   for (let i = 0; i < 5; i++) {
-    const hoursAgo = 2 + Math.floor(rand() * 66);
-    const when = new Date(now.getTime() - hoursAgo * 3_600_000);
+    const daysAgo = 1 + Math.floor(rand() * 3);
+    const when = at(toISODate(addDays(now, -daysAgo)), 7 + Math.floor(rand() * 13), Math.floor(rand() * 60));
     transfers.push({ id: `tr_${i + 1}`, at: when.toISOString(), amount: 10 * (1 + Math.floor(rand() * 8)), claimed: false });
   }
   transfers.sort((a, b) => (a.at < b.at ? 1 : -1));

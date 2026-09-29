@@ -38,6 +38,7 @@ function RootStack() {
           <Stack.Screen name="qr" options={{ presentation: 'modal' }} />
           <Stack.Screen name="wallet-history" />
           <Stack.Screen name="topup" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="slip-check" />
           <Stack.Screen name="dev/kit" />
         </Stack.Protected>
       </Stack>
