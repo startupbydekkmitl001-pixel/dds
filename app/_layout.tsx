@@ -45,6 +45,7 @@ function RootStack() {
           />
           <Stack.Screen name="leave/new" options={{ presentation: 'modal' }} />
           <Stack.Screen name="leave/[id]" />
+          <Stack.Screen name="profile" />
           <Stack.Screen name="dev/kit" />
         </Stack.Protected>
       </Stack>
