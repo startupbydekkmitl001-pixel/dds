@@ -25,6 +25,8 @@ export interface ColorTokens {
   dangerText: string;
   onDanger: string;
   success: string;
+  /** Success colour safe for text (positive amounts). */
+  successText: string;
   warning: string;
   /** Translucent veil for modal backdrops. */
   scrim: string;
@@ -59,6 +61,7 @@ export const palette: { light: ColorTokens; dark: ColorTokens } = {
     dangerText: '#b3261e',
     onDanger: '#ffffff',
     success: statusColor.present,
+    successText: '#1c6e47',
     warning: statusColor.late,
     scrim: 'rgba(41,40,39,0.38)',
   },
@@ -81,6 +84,7 @@ export const palette: { light: ColorTokens; dark: ColorTokens } = {
     dangerText: '#ff8a80',
     onDanger: '#000000',
     success: statusColor.present,
+    successText: '#6fd6a2',
     warning: statusColor.late,
     scrim: 'rgba(0,0,0,0.6)',
   },
