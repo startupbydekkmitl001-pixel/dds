@@ -36,6 +36,8 @@ function RootStack() {
         <Stack.Protected guard={unlocked}>
           <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
           <Stack.Screen name="qr" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="wallet-history" />
+          <Stack.Screen name="topup" options={{ presentation: 'modal' }} />
           <Stack.Screen name="dev/kit" />
         </Stack.Protected>
       </Stack>
