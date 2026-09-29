@@ -4,7 +4,7 @@ import { Button, Chip, Text } from '@/components/ui';
 import { formatBaht } from '@/lib/format';
 import { TOPUP_PRESETS, validateAmount } from '@/lib/topup';
 import { useTheme } from '@/theme/ThemeProvider';
-import { typeScale } from '@/theme/typography';
+import { lineHeightFor, typeScale } from '@/theme/typography';
 
 /** Step ① — quick preset chips or a custom amount, validated inline. */
 export function AmountStep({ initial, onNext }: { initial: number | null; onNext: (amount: number) => void }) {
@@ -86,7 +86,7 @@ export function AmountStep({ initial, onNext }: { initial: number | null; onNext
             style={[
               typeScale.data,
               styles.input,
-              { fontSize: 24, lineHeight: 30, color: c.text, backgroundColor: c.card, borderColor: error ? c.dangerText : c.hairline, borderRadius: radius.input },
+              { fontSize: 24, lineHeight: lineHeightFor(24, typeScale.data.fontFamily), color: c.text, backgroundColor: c.card, borderColor: error ? c.dangerText : c.hairline, borderRadius: radius.input },
             ]}
           />
         </View>

@@ -6,6 +6,7 @@ import { unreadCount } from '@/data/selectors';
 import { useApp } from '@/data/store';
 import { thaiDate } from '@/lib/format';
 import { greetingFor } from '@/lib/greeting';
+import { ITALIC_TUCK } from '@/theme/typography';
 
 export function HomeHeader({ now }: { now: Date }) {
   const nickname = useApp((s) => s.student.nickname);
@@ -21,7 +22,9 @@ export function HomeHeader({ now }: { now: Date }) {
         <Text variant="title" accessibilityRole="header">
           {greetingFor(now)}
         </Text>
-        <Text variant="displayItalic">{nickname}</Text>
+        <Text variant="displayItalic" style={styles.nickname}>
+          {nickname}
+        </Text>
       </View>
       <View style={styles.actions}>
         <ThemeToggle />
@@ -34,5 +37,6 @@ export function HomeHeader({ now }: { now: Date }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingTop: 4, paddingBottom: 18 },
   flex: { flex: 1 },
+  nickname: { marginTop: -ITALIC_TUCK },
   actions: { flexDirection: 'row', gap: 10 },
 });

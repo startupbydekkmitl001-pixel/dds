@@ -1,7 +1,7 @@
 import { composite, contrastRatio } from '@/theme/contrast';
 import { resolveScheme } from '@/theme/ThemeProvider';
 import { features, palette } from '@/theme/tokens';
-import { typeScale } from '@/theme/typography';
+import { lineHeightFor, typeScale } from '@/theme/typography';
 
 test('resolveScheme honours explicit preference, else system, else light', () => {
   expect(resolveScheme('system', 'dark')).toBe('dark');
@@ -56,6 +56,6 @@ describe.each(['light', 'dark'] as const)('%s palette meets WCAG AA', (mode) => 
   });
 });
 
-test('every type style leaves room for Thai marks (line height ≥ 1.2×)', () => {
-  for (const v of Object.values(typeScale)) expect(v.lineHeight / v.fontSize).toBeGreaterThanOrEqual(1.2);
+test('every type style is at least as tall as its font needs, so Thai marks are never clipped', () => {
+  for (const v of Object.values(typeScale)) expect(v.lineHeight).toBeGreaterThanOrEqual(lineHeightFor(v.fontSize, v.fontFamily));
 });

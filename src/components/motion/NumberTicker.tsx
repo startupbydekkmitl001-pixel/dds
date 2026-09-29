@@ -56,7 +56,7 @@ export function NumberTicker({
       style={[
         base,
         { color: color ?? c.text, fontVariant: ['tabular-nums'] },
-        size ? { fontSize: size, lineHeight: lineHeightFor(size) } : null,
+        size ? { fontSize: size, lineHeight: lineHeightFor(size, base.fontFamily) } : null,
         style,
       ]}
     >

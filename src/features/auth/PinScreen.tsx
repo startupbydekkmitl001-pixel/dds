@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AmbientLight, BorderTrace, useShake } from '@/components/motion';
@@ -12,6 +12,7 @@ import { haptic } from '@/lib/haptics';
 import { checkPin, lockRemainingMs, PIN_LENGTH } from '@/lib/pin';
 import { dur, ease } from '@/theme/motion';
 import { useTheme } from '@/theme/ThemeProvider';
+import { ITALIC_TUCK } from '@/theme/typography';
 import { PinDots } from './PinDots';
 import { PinPad } from './PinPad';
 import { useBiometric } from './useBiometric';
@@ -19,11 +20,17 @@ import { useBiometric } from './useBiometric';
 const DOTS_W = PIN_LENGTH * 16 + (PIN_LENGTH - 1) * 20 + 48;
 const DOTS_H = 64;
 const CLEAR_AFTER_MS = 400;
+/** Height the roomy layout needs between the safe-area insets; shorter screens get the compact one. */
+const ROOMY_H = 724;
 
 /** Spec §5.1: slow wordmark reveal, 6 dots, big keypad, shake on error, border-trace on success. */
 export default function PinScreen() {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  // Small phones (iPhone SE) get a smaller headline and keypad, so the whole screen still fits.
+  const compact = height - insets.top - insets.bottom < ROOMY_H;
+  const headline = compact ? 32 : undefined;
   const reduced = useReducedMotion();
   const nickname = useApp((s) => s.student.nickname);
   const gate = useApp((s) => s.pinGate);
@@ -114,16 +121,16 @@ export default function PinScreen() {
   const caption = locked ? `ลองใหม่ได้ในอีก ${Math.ceil(lockMs / 1000)} วินาที` : message;
 
   return (
-    <View style={[styles.fill, { backgroundColor: c.canvas, paddingTop: insets.top + 24, paddingBottom: insets.bottom + 12 }]}>
+    <View style={[styles.fill, { backgroundColor: c.canvas, paddingTop: insets.top + (compact ? 8 : 24), paddingBottom: insets.bottom + 12 }]}>
       <AmbientLight />
       <Animated.View style={[styles.head, revealStyle]}>
         <Text variant="eyebrow" tone="secondary">
           DSCHOOL · STUDENT
         </Text>
-        <Text variant="display" center>
+        <Text variant="display" size={headline} center>
           ยินดีต้อนรับกลับ
         </Text>
-        <Text variant="displayItalic" center>
+        <Text variant="displayItalic" size={headline} center style={styles.nickname}>
           {nickname}
         </Text>
         <Text variant="body" tone="secondary" center>
@@ -131,7 +138,7 @@ export default function PinScreen() {
         </Text>
       </Animated.View>
 
-      <View style={styles.middle}>
+      <View style={[styles.middle, compact ? styles.middleCompact : null]}>
         <Animated.View style={[styles.dotsBox, { width: DOTS_W, height: DOTS_H }, shakeStyle]}>
           <GlassLayers radius={DOTS_H / 2} />
           <PinDots length={PIN_LENGTH} filled={digits.length} state={state} />
@@ -148,7 +155,13 @@ export default function PinScreen() {
         </View>
       </View>
 
-      <PinPad onDigit={onDigit} onDelete={onDelete} onBiometric={bio.available ? tryBiometric : undefined} disabled={busy || locked} />
+      <PinPad
+        onDigit={onDigit}
+        onDelete={onDelete}
+        onBiometric={bio.available ? tryBiometric : undefined}
+        disabled={busy || locked}
+        compact={compact}
+      />
 
       <Button title="ลืม PIN?" variant="ghost" onPress={() => router.push('/forgot-pin')} style={styles.forgot} />
     </View>
@@ -158,7 +171,9 @@ export default function PinScreen() {
 const styles = StyleSheet.create({
   fill: { flex: 1, alignItems: 'center', paddingHorizontal: 20 },
   head: { alignItems: 'center', gap: 2 },
+  nickname: { marginTop: -ITALIC_TUCK },
   middle: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, minHeight: 120 },
+  middleCompact: { minHeight: DOTS_H + 32 },
   dotsBox: { alignItems: 'center', justifyContent: 'center', borderRadius: DOTS_H / 2 },
   caption: { minHeight: 22 },
   forgot: { marginTop: 8, alignSelf: 'center' },

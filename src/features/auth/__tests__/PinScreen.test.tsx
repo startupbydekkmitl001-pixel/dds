@@ -1,4 +1,5 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { appStore } from '@/data/store';
 import PinScreen from '@/features/auth/PinScreen';
 import { setClock } from '@/lib/clock';
@@ -61,4 +62,23 @@ test('five wrong PINs lock the keypad with a countdown', async () => {
     });
   }
   expect(await screen.findByText('ลองใหม่ได้ในอีก 30 วินาที')).toBeTruthy();
+});
+
+describe('fits the screen', () => {
+  const keySize = () => StyleSheet.flatten(screen.getByLabelText('5').props.style).width;
+  const setHeight = (height: number) => jest.spyOn(Dimensions, 'get').mockReturnValue({ width: 375, height, scale: 2, fontScale: 1 });
+  afterEach(() => jest.restoreAllMocks());
+
+  test('a tall phone gets the roomy 72pt keypad', async () => {
+    setHeight(926);
+    await renderWithTheme(<PinScreen />);
+    expect(keySize()).toBe(72);
+  });
+
+  test('a short phone (iPhone SE) gets the compact keypad so nothing falls off the bottom', async () => {
+    setHeight(667);
+    await renderWithTheme(<PinScreen />);
+    expect(keySize()).toBe(64);
+    expect(screen.getByText('ลืม PIN?')).toBeTruthy();
+  });
 });

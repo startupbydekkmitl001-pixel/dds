@@ -151,16 +151,18 @@ The success, warning and danger roles reuse present, late and absent.
 
 | Role | Font | Weight | Size / line height | Notes |
 |---|---|---|---|---|
-| display | Trirong | 300 (+300 italic) | 40 / 50 | Greetings, hero; one italic word |
-| title | Trirong | 300 | 30 / 38 | Screen titles |
-| heading | IBM Plex Sans Thai | 500 | 20 / 28 | Section/card headings |
-| body | IBM Plex Sans Thai | 400 | 16 / 24 | Default text |
-| label | IBM Plex Sans Thai | 500 | 14 / 20 | Buttons, rows |
-| caption | IBM Plex Sans Thai | 400 | 13 / 18 | Metadata |
+| display | Trirong | 300 (+300 italic) | 40 / 70 | Greetings, hero; one italic word |
+| title | Trirong | 300 | 30 / 53 | Screen titles |
+| heading | IBM Plex Sans Thai | 500 | 20 / 33 | Section/card headings |
+| body | IBM Plex Sans Thai | 400 | 16 / 27 | Default text |
+| label | IBM Plex Sans Thai | 500 | 14 / 24 | Buttons, rows |
+| caption | IBM Plex Sans Thai | 400 | 13 / 22 | Metadata |
 | data | IBM Plex Mono | 500 | 12–44 | Money, times, dates, counts (digits and Latin only) |
 | eyebrow | IBM Plex Mono | 500 | 11 / 16, letter-spacing 1.5, uppercase | Latin/digit micro-labels only |
 
-- Thai line height is at least 1.2× everywhere. The reference files' 0.9 leading is deliberately not used because it clips Thai marks.
+- A line is never shorter than its font's own line height: 1.734× for Trirong, 1.65× for IBM Plex Sans Thai, 1.3× for IBM Plex Mono (hhea ascender + descender, from the bundled fonts; `FONT_LINE` in `src/theme/typography.ts`). Anything tighter clips Thai marks: iOS keeps the descender and cuts the top off the line, so ี ้ ั ิ disappear, and Android trims both ends. 1.2× was not enough. The `Text` component enforces this for every variant, size override and style.
+- An italic Trirong line under another Trirong line tucks up by 12pt (`ITALIC_TUCK`), which the spare room in both lines' boxes allows without marks touching. Italic text gets side padding (offset by an equal negative margin) so letters leaning past the box are not cut off.
+- Thai text is not letter-spaced, even in display sizes.
 - Text respects Dynamic Type (`allowFontScaling`), capped at 1.4× on display and title sizes.
 
 ### 4.3 Space, shape and depth

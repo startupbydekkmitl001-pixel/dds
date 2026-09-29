@@ -68,7 +68,7 @@ export function RollingNumber({
   // Strips clip to an exact line height, so apply Dynamic Type ourselves (capped like other large numbers).
   const scale = Math.min(PixelRatio.getFontScale(), 1.4);
   const fontSize = (size ?? base.fontSize) * scale;
-  const lh = lineHeightFor(fontSize);
+  const lh = lineHeightFor(fontSize, base.fontFamily);
   const textStyle = { ...base, fontSize, lineHeight: lh, color: color ?? c.text, fontVariant: ['tabular-nums' as const] };
 
   const text = format(value);

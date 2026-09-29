@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { ITALIC_TUCK } from '@/theme/typography';
 import { IconButton } from './IconButton';
 import { Text } from './Text';
 
@@ -35,7 +36,11 @@ export function ScreenHeader({
       <Text variant="title" accessibilityRole="header">
         {title}
       </Text>
-      {italicWord ? <Text variant="displayItalic">{italicWord}</Text> : null}
+      {italicWord ? (
+        <Text variant="displayItalic" style={styles.italic}>
+          {italicWord}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -43,4 +48,5 @@ export function ScreenHeader({
 const styles = StyleSheet.create({
   wrap: { paddingTop: 4, paddingBottom: 20, gap: 4 },
   bar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44, marginBottom: 8 },
+  italic: { marginTop: -ITALIC_TUCK },
 });
