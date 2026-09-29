@@ -100,6 +100,9 @@ export const feature: Record<FeatureKey, { fill: string; ink: string }> = {
   announcements: { fill: '#0c4243', ink: '#ffffff' },
 };
 
+/** QR codes stay dark-on-light in both themes; inverted codes scan poorly. */
+export const qr = { ink: '#000000', paper: '#ffffff' } as const;
+
 /** Vivid+Co RGB dispersion — only inside the prism shimmer. */
 export const prism: [string, string, string] = ['#ff2a2a', '#2a7fff', '#2aff2a'];
 

@@ -1,15 +1,34 @@
 import { router } from 'expo-router';
 import { X } from 'lucide-react-native';
-import { View } from 'react-native';
-import { IconButton, Screen, Text } from '@/components/ui';
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { IconButton, Screen, Segmented } from '@/components/ui';
+import { PayQR } from '@/features/qr/PayQR';
+import { ScanQR } from '@/features/qr/ScanQR';
 
+/** Spec §5.4 — pay with your QR, or scan one. Swipe down to close (iOS modal). */
 export default function QrModal() {
+  const [tab, setTab] = useState<'pay' | 'scan'>('pay');
   return (
-    <Screen scroll={false}>
-      <View style={{ alignItems: 'flex-end' }}>
+    <Screen>
+      <View style={styles.bar}>
+        <Segmented
+          options={[
+            { value: 'pay', label: 'จ่ายเงิน' },
+            { value: 'scan', label: 'สแกน' },
+          ]}
+          value={tab}
+          onChange={setTab}
+          style={styles.flex}
+        />
         <IconButton icon={X} label="ปิด" onPress={() => router.back()} />
       </View>
-      <Text variant="title">QR</Text>
+      {tab === 'pay' ? <PayQR /> : <ScanQR />}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  bar: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  flex: { flex: 1 },
+});

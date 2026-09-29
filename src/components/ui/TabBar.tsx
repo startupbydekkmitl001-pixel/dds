@@ -31,7 +31,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
       <View style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(c.canvas, 0.78), borderTopWidth: 1, borderTopColor: c.hairline }]} />
       <View style={[styles.row, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         {state.routes.map((route, i) => {
-          if (route.name === 'qr') {
+          if (route.name === 'pay') {
             return (
               <View key={route.key} style={styles.item}>
                 <PressableScale
