@@ -39,6 +39,12 @@ function RootStack() {
           <Stack.Screen name="wallet-history" />
           <Stack.Screen name="topup" options={{ presentation: 'modal' }} />
           <Stack.Screen name="slip-check" />
+          <Stack.Screen
+            name="day/[date]"
+            options={{ presentation: 'formSheet', sheetAllowedDetents: [0.5, 1], sheetGrabberVisible: true, sheetCornerRadius: 28 }}
+          />
+          <Stack.Screen name="leave/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="leave/[id]" />
           <Stack.Screen name="dev/kit" />
         </Stack.Protected>
       </Stack>
