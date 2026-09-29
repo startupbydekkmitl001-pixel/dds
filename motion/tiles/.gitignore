@@ -1,0 +1,5 @@
+# Full-quality render masters and QA frames. The app ships compressed copies
+# in ../../assets/tiles/ (see "Tile loops" in the root README).
+renders/
+snapshots/
+.hyperframes/

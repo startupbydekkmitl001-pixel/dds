@@ -1,0 +1,1742 @@
+<!doctype html>
+<html
+  lang="th"
+  data-resolution="portrait"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"light","options":[{"value":"light","label":"Light"},{"value":"dark","label":"Dark"}]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=2340" />
+    <title>Dschool — welcome intro</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/CustomEase.min.js"></script>
+    <style>
+      /* ── Brand typefaces (the app's own files, SIL OFL 1.1) ─────────────────── */
+      @font-face {
+        font-family: "DS Trirong";
+        src: url("assets/fonts/Trirong_300Light.ttf") format("truetype");
+        font-weight: 300;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "DS Trirong";
+        src: url("assets/fonts/Trirong_300Light_Italic.ttf") format("truetype");
+        font-weight: 300;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "DS Plex Thai";
+        src: url("assets/fonts/IBMPlexSansThai_400Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: "DS Plex Thai";
+        src: url("assets/fonts/IBMPlexSansThai_500Medium.ttf") format("truetype");
+        font-weight: 500;
+      }
+      @font-face {
+        font-family: "DS Plex Mono";
+        src: url("assets/fonts/IBMPlexMono_400Regular.ttf") format("truetype");
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: "DS Plex Mono";
+        src: url("assets/fonts/IBMPlexMono_500Medium.ttf") format("truetype");
+        font-weight: 500;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 2340px;
+        overflow: hidden;
+        background: #eef0f7;
+      }
+
+      /* ── Tokens (frame.md ← src/theme/tokens.ts) ────────────────────────────── */
+      #root {
+        --canvas: #eef0f7;
+        --text: #1c1d2b;
+        --text2: #4f5369;
+        --link: #4b40b5;
+        --hairline: #dfe1ec;
+        --glass: rgba(255, 255, 255, 0.58);
+        --glass-border: rgba(255, 255, 255, 0.85);
+        --gloss: rgba(255, 255, 255, 0.75);
+        --shadow: rgba(72, 66, 140, 0.1);
+        --shadow-deep: rgba(72, 66, 140, 0.16);
+        --success-text: #16663f;
+        --success-bg: rgba(74, 167, 124, 0.16);
+        --orb-1: #c9c2f2;
+        --orb-2: #bcd6f4;
+        --orb-3: #c4e8d8;
+        --orb-4: #f3d2da;
+        --orb-opacity: 0.5;
+        --halo-opacity: 0.62;
+        --grain-opacity: 0.09;
+        --grain-blend: multiply;
+        --disc-bg: rgba(255, 255, 255, 0.6);
+        --sheen: rgba(255, 255, 255, 0.55);
+
+        --att-fill: #dcd7fb;
+        --att-ink: #2e2870;
+        --att-glow: #a99cf0;
+        --wal-fill: #f8dce5;
+        --wal-ink: #6a2442;
+        --wal-glow: #eea8c0;
+        --qr-fill: #d4e5f8;
+        --qr-ink: #163e66;
+        --qr-glow: #9cc3ee;
+        --lv-fill: #d5efe4;
+        --lv-ink: #1b5440;
+        --lv-glow: #9ed9c0;
+
+        --st-present: #4aa77c;
+        --st-late: #d9a043;
+        --st-sick: #6c8ee0;
+        --st-personal: #5fb3d6;
+        --prism-1: #f6c9dd;
+        --prism-2: #c6d6fb;
+        --prism-3: #c4eedd;
+
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        color: var(--text);
+        font-family: "DS Plex Thai", sans-serif;
+      }
+      #root[data-theme="dark"] {
+        --canvas: #0d0e18;
+        --text: #f1f1f8;
+        --text2: #b1b4ca;
+        --link: #b9b1ff;
+        --hairline: #2a2c40;
+        --glass: rgba(255, 255, 255, 0.075);
+        --glass-border: rgba(255, 255, 255, 0.13);
+        --gloss: rgba(255, 255, 255, 0.1);
+        --shadow: rgba(0, 0, 0, 0.42);
+        --shadow-deep: rgba(0, 0, 0, 0.5);
+        --success-text: #80dab0;
+        --success-bg: rgba(74, 167, 124, 0.2);
+        --orb-1: #3f3a78;
+        --orb-2: #1f4262;
+        --orb-3: #1d4a44;
+        --orb-4: #4d2c4c;
+        --orb-opacity: 0.55;
+        --halo-opacity: 0.18;
+        --grain-opacity: 0.1;
+        --grain-blend: overlay;
+        --disc-bg: rgba(255, 255, 255, 0.08);
+        --sheen: rgba(255, 255, 255, 0.16);
+
+        --att-fill: #2b2850;
+        --att-ink: #dcd7ff;
+        --att-glow: #7b6fd0;
+        --wal-fill: #3b2536;
+        --wal-ink: #f9d3e0;
+        --wal-glow: #c27792;
+        --qr-fill: #1f3149;
+        --qr-ink: #d0e4fb;
+        --qr-glow: #6d9bcf;
+        --lv-fill: #1c3a31;
+        --lv-ink: #caefdf;
+        --lv-glow: #6fb597;
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      .mono {
+        font-family: "DS Plex Mono", monospace;
+      }
+      .mask {
+        position: absolute;
+        overflow: hidden;
+      }
+      .mask > * {
+        display: block;
+      }
+
+      /* Frosted glass: translucent fill, bright rim, top gloss, soft tinted shadow. */
+      .glass {
+        background: var(--glass);
+        border: 3px solid var(--glass-border);
+        box-shadow:
+          0 48px 120px var(--shadow-deep),
+          0 10px 30px var(--shadow),
+          inset 0 3px 0 var(--gloss);
+        backdrop-filter: blur(44px) saturate(1.5);
+        -webkit-backdrop-filter: blur(44px) saturate(1.5);
+      }
+
+      /* ── Background ─────────────────────────────────────────────────────────── */
+      #bg {
+        z-index: 0;
+        background: var(--canvas);
+      }
+      .orb-pos {
+        position: absolute;
+        width: 1180px;
+        height: 1180px;
+      }
+      .orb {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 50%,
+          var(--c) 0%,
+          color-mix(in srgb, var(--c) 72%, transparent) 26%,
+          color-mix(in srgb, var(--c) 24%, transparent) 50%,
+          transparent 70%
+        );
+      }
+      #orb-1 {
+        left: -420px;
+        top: -360px;
+        --c: var(--orb-1);
+      }
+      #orb-2 {
+        left: 360px;
+        top: 360px;
+        --c: var(--orb-2);
+      }
+      #orb-3 {
+        left: -480px;
+        top: 1180px;
+        --c: var(--orb-3);
+      }
+      #orb-4 {
+        left: 300px;
+        top: 1620px;
+        --c: var(--orb-4);
+      }
+      #grain {
+        position: absolute;
+        inset: 0;
+        opacity: var(--grain-opacity);
+        mix-blend-mode: var(--grain-blend);
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+
+      /* ── Scene 1 · welcome ─────────────────────────────────────────────────── */
+      #welcome {
+        z-index: 2;
+      }
+      #halo-pos {
+        position: absolute;
+        left: 150px;
+        top: 640px;
+        width: 780px;
+        height: 780px;
+      }
+      #halo {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          var(--prism-1),
+          var(--prism-2),
+          var(--prism-3),
+          var(--prism-1)
+        );
+        filter: blur(60px);
+      }
+      #welcome-line-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 838px;
+        display: flex;
+        justify-content: center;
+      }
+      #welcome-line {
+        font: 500 46px/1.4 "DS Plex Thai";
+        color: var(--text2);
+        letter-spacing: 0.02em;
+      }
+      #hello-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1228px;
+        display: flex;
+        justify-content: center;
+      }
+      #hello {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        height: 132px;
+        padding: 0 48px 0 22px;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .monogram {
+        display: grid;
+        place-items: center;
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        background: var(--att-fill);
+        color: var(--att-ink);
+        font: 300 50px/1 "DS Trirong";
+      }
+      #hello-name {
+        font: 500 46px/1.35 "DS Plex Thai";
+      }
+      .dot-sep {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--text2);
+      }
+      #hello-class {
+        font: 400 42px/1.35 "DS Plex Thai";
+        color: var(--text2);
+      }
+      #school-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1400px;
+        display: flex;
+        justify-content: center;
+      }
+      #school {
+        font: 400 38px/1.4 "DS Plex Thai";
+        color: var(--text2);
+      }
+
+      /* ── Wordmark (brand anchor) ───────────────────────────────────────────── */
+      #brand {
+        z-index: 3;
+      }
+      #wordmark-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 900px;
+        height: 270px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #wordmark {
+        display: flex;
+        align-items: baseline;
+        font: 300 236px/1.12 "DS Trirong";
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .wm-cell {
+        display: inline-block;
+        overflow: hidden;
+        padding: 0 0.07em 0.08em 0.02em;
+        margin-right: -0.05em;
+      }
+      .wm-ch {
+        display: inline-block;
+      }
+      .wm-it {
+        font-style: italic;
+      }
+
+      /* ── Chapter ticker ────────────────────────────────────────────────────── */
+      #chapters {
+        z-index: 4;
+      }
+      #chapter-mask {
+        left: 84px;
+        top: 316px;
+        width: 400px;
+        height: 44px;
+      }
+      .chapter {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font: 500 32px/44px "DS Plex Mono";
+        letter-spacing: 0.16em;
+        color: var(--text2);
+      }
+
+      /* ── Feature scenes ────────────────────────────────────────────────────── */
+      .scene {
+        z-index: 6;
+      }
+      .headline-mask {
+        left: 80px;
+        top: 364px;
+        width: 940px;
+        height: 180px;
+      }
+      .headline {
+        padding-top: 14px;
+        font: 300 112px/1.4 "DS Trirong";
+        letter-spacing: -0.01em;
+        color: var(--text);
+        white-space: nowrap;
+      }
+      .hero {
+        position: absolute;
+        left: 80px;
+        top: 620px;
+        width: 920px;
+        height: 1000px;
+        border-radius: 72px;
+        overflow: hidden;
+      }
+      .hero.shimmer-sweep-target {
+        position: absolute;
+        display: block;
+      }
+      .hero-head {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 52px;
+        height: 108px;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      .disc {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 104px;
+        height: 104px;
+        border-radius: 50%;
+      }
+      .disc svg {
+        width: 54px;
+        height: 54px;
+      }
+      .hero-title {
+        font: 500 50px/1.35 "DS Plex Thai";
+      }
+      .meta-pill {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 68px;
+        padding: 0 28px;
+        border-radius: 999px;
+        border: 3px solid var(--hairline);
+        font: 400 32px/1 "DS Plex Thai";
+        color: var(--text2);
+      }
+      .meta-pill.mono {
+        font: 500 32px/1 "DS Plex Mono";
+        letter-spacing: 0.06em;
+      }
+      .att {
+        background: var(--att-fill);
+        color: var(--att-ink);
+      }
+      .wal {
+        background: var(--wal-fill);
+        color: var(--wal-ink);
+      }
+      .qrc {
+        background: var(--qr-fill);
+        color: var(--qr-ink);
+      }
+      .lv {
+        background: var(--lv-fill);
+        color: var(--lv-ink);
+      }
+      svg.icon {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Attendance card */
+      #ring {
+        position: absolute;
+        left: 200px;
+        top: 190px;
+        width: 520px;
+        height: 520px;
+      }
+      #ring-center {
+        position: absolute;
+        left: 200px;
+        top: 190px;
+        width: 520px;
+        height: 520px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #ring-num {
+        font: 500 132px/1.05 "DS Plex Mono";
+        letter-spacing: -0.03em;
+      }
+      #ring-cap {
+        font: 400 42px/1.35 "DS Plex Thai";
+        color: var(--text2);
+      }
+      #week {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 768px;
+        height: 160px;
+        display: flex;
+        gap: 20px;
+      }
+      .day {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        border-radius: 40px;
+        border: 3px solid var(--hairline);
+      }
+      .day.today {
+        border-color: var(--att-glow);
+        background: color-mix(in srgb, var(--att-fill) 55%, transparent);
+      }
+      .day-label {
+        font: 500 36px/1.3 "DS Plex Thai";
+      }
+      .day-dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+      }
+
+      /* Wallet card */
+      #w-eyebrow {
+        position: absolute;
+        left: 64px;
+        top: 214px;
+        font: 400 40px/1.35 "DS Plex Thai";
+        color: var(--text2);
+      }
+      #balance {
+        position: absolute;
+        left: 60px;
+        top: 282px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        color: var(--text);
+      }
+      #bal-cur {
+        font: 500 100px/1 "DS Plex Mono";
+        color: var(--text2);
+      }
+      #bal-num {
+        font: 500 178px/1 "DS Plex Mono";
+        letter-spacing: -0.03em;
+      }
+      #bal-dec {
+        font: 400 84px/1 "DS Plex Mono";
+        color: var(--text2);
+      }
+      #topup {
+        position: absolute;
+        left: 60px;
+        top: 510px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 84px;
+        padding: 0 34px;
+        border-radius: 999px;
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+      #topup .amt {
+        font: 500 38px/1 "DS Plex Mono";
+      }
+      #topup .txt {
+        font: 500 38px/1.3 "DS Plex Thai";
+      }
+      #chart-label {
+        position: absolute;
+        left: 64px;
+        top: 632px;
+        font: 400 36px/1.35 "DS Plex Thai";
+        color: var(--text2);
+      }
+      #bars {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        top: 700px;
+        height: 180px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+      .bar {
+        width: 76px;
+        border-radius: 22px 22px 12px 12px;
+        background: var(--wal-glow);
+      }
+      .bar.today {
+        background: var(--wal-ink);
+      }
+      #bar-labels {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        top: 900px;
+        display: flex;
+        justify-content: space-between;
+      }
+      #bar-labels span {
+        width: 76px;
+        text-align: center;
+        font: 400 32px/1.3 "DS Plex Thai";
+        color: var(--text2);
+      }
+
+      /* QR card */
+      #qr-paper {
+        position: absolute;
+        left: 160px;
+        top: 186px;
+        width: 600px;
+        height: 600px;
+        border-radius: 44px;
+        background: #ffffff;
+        box-shadow: 0 24px 60px var(--shadow);
+        overflow: hidden;
+      }
+      #qr-data {
+        position: absolute;
+        left: 37.5px;
+        top: 37.5px;
+        width: 525px;
+        height: 525px;
+      }
+      #qr-data svg {
+        display: block;
+        width: 525px;
+        height: 525px;
+      }
+      .finder {
+        position: absolute;
+        width: 147px;
+        height: 147px;
+        border: 21px solid #000000;
+        border-radius: 22px;
+        background: #ffffff;
+      }
+      .finder::after {
+        content: "";
+        position: absolute;
+        left: 21px;
+        top: 21px;
+        width: 63px;
+        height: 63px;
+        border-radius: 10px;
+        background: #000000;
+      }
+      #qr-logo {
+        position: absolute;
+        left: 247px;
+        top: 247px;
+        width: 106px;
+        height: 106px;
+        display: grid;
+        place-items: center;
+        border-radius: 28px;
+        border: 8px solid #ffffff;
+        background: #dcd7fb;
+        color: #2e2870;
+        font: 300 64px/1 "DS Trirong";
+      }
+      #scanline {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        top: 20px;
+        height: 12px;
+        border-radius: 6px;
+        background: linear-gradient(90deg, transparent, var(--qr-glow) 18%, var(--qr-glow) 82%, transparent);
+        box-shadow: 0 0 40px 8px color-mix(in srgb, var(--qr-glow) 70%, transparent);
+        opacity: 0;
+      }
+      #trace {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 920px;
+        height: 1000px;
+        overflow: visible;
+      }
+      #toast-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 842px;
+        display: flex;
+        justify-content: center;
+      }
+      #toast {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        height: 100px;
+        padding: 0 40px 0 18px;
+        border-radius: 999px;
+        background: var(--success-bg);
+        color: var(--success-text);
+      }
+      .check-disc {
+        display: grid;
+        place-items: center;
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: var(--st-present);
+        color: #ffffff;
+      }
+      .check-disc svg {
+        width: 40px;
+        height: 40px;
+        stroke-width: 3;
+      }
+      #toast .t1 {
+        font: 500 40px/1.3 "DS Plex Thai";
+      }
+      #toast .t2 {
+        font: 500 40px/1 "DS Plex Mono";
+      }
+      #toast .t3 {
+        font: 400 36px/1.3 "DS Plex Thai";
+        color: var(--text2);
+      }
+
+      /* Leave card */
+      #lv-sub {
+        position: absolute;
+        left: 64px;
+        top: 196px;
+        font: 400 40px/1.35 "DS Plex Thai";
+        color: var(--text2);
+      }
+      .sick-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--st-sick);
+      }
+      .step {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        height: 110px;
+      }
+      .step-dot {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 4px solid var(--hairline);
+      }
+      .step-fill {
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: var(--lv-glow);
+        display: grid;
+        place-items: center;
+      }
+      .step-fill svg {
+        width: 46px;
+        height: 46px;
+        stroke: var(--lv-ink);
+        stroke-width: 3.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .step-label {
+        position: absolute;
+        left: 124px;
+        top: -6px;
+        font: 500 46px/1.35 "DS Plex Thai";
+      }
+      .step-time {
+        position: absolute;
+        left: 124px;
+        top: 60px;
+        font: 400 32px/1.3 "DS Plex Mono";
+        color: var(--text2);
+      }
+      .conn {
+        position: absolute;
+        left: 99px;
+        width: 6px;
+        height: 106px;
+        border-radius: 3px;
+        background: var(--hairline);
+        overflow: hidden;
+      }
+      .conn-fill {
+        width: 100%;
+        height: 100%;
+        background: var(--lv-glow);
+      }
+      #badge {
+        position: absolute;
+        left: 60px;
+        top: 858px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 92px;
+        padding: 0 38px 0 14px;
+        border-radius: 999px;
+        background: var(--success-bg);
+        color: var(--success-text);
+        font: 500 42px/1.3 "DS Plex Thai";
+      }
+      #badge .check-disc {
+        width: 64px;
+        height: 64px;
+      }
+
+      /* ── Tray → bento tiles ────────────────────────────────────────────────── */
+      #tray {
+        z-index: 5;
+      }
+      .tile {
+        position: absolute;
+        width: 440px;
+        height: 400px;
+        border-radius: 64px;
+        overflow: hidden;
+      }
+      .tile-fill {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+      }
+      .tile-sheen {
+        position: absolute;
+        left: 0;
+        top: -40px;
+        width: 180px;
+        height: 480px;
+        background: linear-gradient(90deg, transparent, var(--sheen) 50%, transparent);
+        opacity: 0;
+      }
+      .tile-orb {
+        position: absolute;
+        right: -70px;
+        top: -80px;
+        width: 290px;
+        height: 290px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 36% 32%, rgba(255, 255, 255, 0.95) 0%, var(--g) 34%, color-mix(in srgb, var(--g) 40%, transparent) 62%, transparent 72%);
+      }
+      .chip-icon {
+        position: absolute;
+        left: 150px;
+        top: 130px;
+        width: 140px;
+        height: 140px;
+        color: var(--text2);
+        opacity: 0.4;
+      }
+      .chip-icon svg {
+        width: 140px;
+        height: 140px;
+        stroke-width: 2.2;
+      }
+      .ring-bloom {
+        position: absolute;
+        left: 70px;
+        top: 50px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        border: 10px solid var(--g);
+        opacity: 0;
+      }
+      .tile-body {
+        position: absolute;
+        inset: 0;
+        padding: 44px;
+        opacity: 0;
+      }
+      .tile-disc {
+        display: grid;
+        place-items: center;
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        background: var(--disc-bg);
+      }
+      .tile-disc svg {
+        width: 48px;
+        height: 48px;
+      }
+      .tile-label {
+        position: absolute;
+        left: 44px;
+        top: 160px;
+        font: 500 40px/1.35 "DS Plex Thai";
+      }
+      .tile-value {
+        position: absolute;
+        left: 44px;
+        top: 222px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .tile-value .n {
+        font: 500 76px/1 "DS Plex Mono";
+        letter-spacing: -0.02em;
+      }
+      .tile-value .u {
+        font: 500 38px/1.3 "DS Plex Thai";
+      }
+      .tile-cap {
+        position: absolute;
+        left: 44px;
+        top: 316px;
+        font: 400 30px/1.35 "DS Plex Thai";
+      }
+      #tile-0 {
+        left: 80px;
+        top: 760px;
+        --g: var(--att-glow);
+        color: var(--att-ink);
+      }
+      #tile-1 {
+        left: 560px;
+        top: 760px;
+        --g: var(--wal-glow);
+        color: var(--wal-ink);
+      }
+      #tile-2 {
+        left: 80px;
+        top: 1200px;
+        --g: var(--qr-glow);
+        color: var(--qr-ink);
+      }
+      #tile-3 {
+        left: 560px;
+        top: 1200px;
+        --g: var(--lv-glow);
+        color: var(--lv-ink);
+      }
+
+      /* ── Finale ────────────────────────────────────────────────────────────── */
+      #finale {
+        z-index: 7;
+        pointer-events: none;
+      }
+      .final-mask {
+        left: 80px;
+        width: 940px;
+        height: 150px;
+      }
+      #final-1-mask {
+        top: 372px;
+      }
+      #final-2-mask {
+        top: 512px;
+      }
+      .final-line {
+        padding-top: 8px;
+        font: 300 100px/1.4 "DS Trirong";
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+      #final-2 {
+        font-style: italic;
+        color: var(--link);
+      }
+    </style>
+
+    <!-- Registry component: number-wheel (rolling digit counter). Default spin set to "double". -->
+    <style>
+      .hf-number-wheel {
+        display: inline-flex;
+        align-items: baseline;
+        gap: var(--hf-wheel-gap, 0.02em);
+        color: var(--hf-wheel-color, inherit);
+        font-variant-numeric: tabular-nums;
+      }
+      .hf-number-wheel-digit {
+        display: inline-block;
+        height: 1em;
+        overflow: hidden;
+      }
+      .hf-number-wheel-strip {
+        display: grid;
+        transform: translateY(0em);
+        will-change: transform;
+      }
+      .hf-number-wheel-strip span {
+        height: 1em;
+        line-height: 1em;
+      }
+    </style>
+
+    <!-- Registry component: shimmer-sweep (light pass across glossy glass). -->
+    <style>
+      .shimmer-sweep-target {
+        position: relative;
+        display: inline-block;
+      }
+      .shimmer-sweep-target .shimmer-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient(
+          var(--shimmer-angle, 120deg),
+          transparent 0%,
+          transparent calc(var(--shimmer-pos, -20%) - var(--shimmer-width, 20%) / 2),
+          var(--shimmer-color, rgba(255, 255, 255, 0.6)) var(--shimmer-pos, -20%),
+          transparent calc(var(--shimmer-pos, -20%) + var(--shimmer-width, 20%) / 2),
+          transparent 100%
+        );
+        mix-blend-mode: overlay;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="14.5"
+      data-width="1080"
+      data-height="2340"
+    >
+      <!-- Background: canvas, four drifting ambient light pools, grain. -->
+      <div id="bg" class="clip" data-start="0" data-duration="14.5" data-track-index="0">
+        <div id="orb-1" class="orb-pos" data-layout-allow-overflow><div class="orb"></div></div>
+        <div id="orb-2" class="orb-pos" data-layout-allow-overflow><div class="orb"></div></div>
+        <div id="orb-3" class="orb-pos" data-layout-allow-overflow><div class="orb"></div></div>
+        <div id="orb-4" class="orb-pos" data-layout-allow-overflow><div class="orb"></div></div>
+        <div id="grain"></div>
+      </div>
+
+      <!-- Frame 1 · welcome -->
+      <div id="welcome" class="clip" data-start="0" data-duration="2.6" data-track-index="1">
+        <div id="halo-pos" data-layout-allow-overflow><div id="halo"></div></div>
+        <div id="welcome-line-row"><div id="welcome-line">ยินดีต้อนรับสู่</div></div>
+        <div id="hello-row">
+          <div id="hello" class="glass shimmer-sweep-target">
+            <div class="monogram">ภ</div>
+            <div id="hello-name">สวัสดี ภูมิ</div>
+            <div class="dot-sep"></div>
+            <div id="hello-class">ม.5/3</div>
+          </div>
+        </div>
+        <div id="school-row"><div id="school">โรงเรียนตัวอย่างวิทยา</div></div>
+      </div>
+
+      <!-- Wordmark: reveals centre stage, then docks top-left as the anchor. -->
+      <div id="brand" class="clip" data-start="0" data-duration="14.5" data-track-index="2">
+        <div id="wordmark-row">
+          <div id="wordmark">
+            <span class="wm-cell"><span class="wm-ch">D</span></span>
+            <span class="wm-cell"><span class="wm-ch wm-it">s</span></span>
+            <span class="wm-cell"><span class="wm-ch wm-it">c</span></span>
+            <span class="wm-cell"><span class="wm-ch wm-it">h</span></span>
+            <span class="wm-cell"><span class="wm-ch wm-it">o</span></span>
+            <span class="wm-cell"><span class="wm-ch wm-it">o</span></span>
+            <span class="wm-cell"><span class="wm-ch wm-it">l</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter ticker 01–04 -->
+      <div id="chapters" class="clip" data-start="2.4" data-duration="9.95" data-track-index="3">
+        <div id="chapter-mask" class="mask">
+          <span id="ch-1" class="chapter" data-layout-allow-overflow>01 / 04</span>
+          <span id="ch-2" class="chapter" data-layout-allow-overflow>02 / 04</span>
+          <span id="ch-3" class="chapter" data-layout-allow-overflow>03 / 04</span>
+          <span id="ch-4" class="chapter" data-layout-allow-overflow>04 / 04</span>
+        </div>
+      </div>
+
+      <!-- Tray chips (unfold into the Home bento in the finale) -->
+      <div id="tray" class="clip" data-start="2.2" data-duration="12.3" data-track-index="5">
+        <div id="tile-0" class="tile glass">
+          <div class="tile-fill att"><div class="tile-orb"></div></div>
+          <div class="ring-bloom"></div>
+          <div class="chip-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M8 2v3" /><path d="M16 2v3" /><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /><path d="m9 15 2 2 4-4" /></svg>
+          </div>
+          <div class="tile-body">
+            <div class="tile-disc">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M8 2v3" /><path d="M16 2v3" /><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /><path d="m9 15 2 2 4-4" /></svg>
+            </div>
+            <div class="tile-label">เวลาเรียน</div>
+            <div class="tile-value"><span class="n">12</span><span class="u">วัน</span></div>
+            <div class="tile-cap">ตรงเวลาติดต่อกัน</div>
+          </div>
+          <div class="tile-sheen"></div>
+        </div>
+        <div id="tile-1" class="tile glass">
+          <div class="tile-fill wal"><div class="tile-orb"></div></div>
+          <div class="ring-bloom"></div>
+          <div class="chip-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></svg>
+          </div>
+          <div class="tile-body">
+            <div class="tile-disc">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></svg>
+            </div>
+            <div class="tile-label">กระเป๋าเงิน</div>
+            <div class="tile-value"><span class="n">฿1,250</span></div>
+            <div class="tile-cap">ยอดคงเหลือ</div>
+          </div>
+          <div class="tile-sheen"></div>
+        </div>
+        <div id="tile-2" class="tile glass">
+          <div class="tile-fill qrc"><div class="tile-orb"></div></div>
+          <div class="ring-bloom"></div>
+          <div class="chip-icon">
+            <svg class="icon" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></svg>
+          </div>
+          <div class="tile-body">
+            <div class="tile-disc">
+              <svg class="icon" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></svg>
+            </div>
+            <div class="tile-label">จ่าย QR</div>
+            <div class="tile-value"><span class="n">฿35</span></div>
+            <div class="tile-cap">จ่ายล่าสุด · โรงอาหาร</div>
+          </div>
+          <div class="tile-sheen"></div>
+        </div>
+        <div id="tile-3" class="tile glass">
+          <div class="tile-fill lv"><div class="tile-orb"></div></div>
+          <div class="ring-bloom"></div>
+          <div class="chip-icon">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
+          </div>
+          <div class="tile-body">
+            <div class="tile-disc">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
+            </div>
+            <div class="tile-label">ใบลา</div>
+            <div class="tile-value"><span class="n">1</span><span class="u">ใบ</span></div>
+            <div class="tile-cap">อนุมัติแล้ว</div>
+          </div>
+          <div class="tile-sheen"></div>
+        </div>
+      </div>
+
+      <!-- Frame 2 · attendance -->
+      <div id="s-att" class="clip scene" data-start="2.4" data-duration="2.4" data-track-index="4">
+        <div class="mask headline-mask"><div id="h-att" class="headline">มาเรียนตรงเวลา</div></div>
+        <div id="hero-att" class="hero glass shimmer-sweep-target">
+          <div class="hero-head">
+            <div class="disc att">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M8 2v3" /><path d="M16 2v3" /><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /><path d="m9 15 2 2 4-4" /></svg>
+            </div>
+            <div class="hero-title">เวลาเรียน</div>
+            <div class="meta-pill">ภาคเรียนที่ 1</div>
+          </div>
+          <svg id="ring" viewBox="0 0 520 520">
+            <circle cx="260" cy="260" r="240" fill="none" stroke="var(--hairline)" stroke-width="40" />
+            <g id="ring-segs"></g>
+          </svg>
+          <div id="ring-center">
+            <div id="ring-num" class="mono">0%</div>
+            <div id="ring-cap">มาเรียน</div>
+          </div>
+          <div id="week">
+            <div class="day"><div class="day-label">จ</div><div class="day-dot" style="background: var(--st-present)"></div></div>
+            <div class="day"><div class="day-label">อ</div><div class="day-dot" style="background: var(--st-present)"></div></div>
+            <div class="day"><div class="day-label">พ</div><div class="day-dot" style="background: var(--st-late)"></div></div>
+            <div class="day"><div class="day-label">พฤ</div><div class="day-dot" style="background: var(--st-present)"></div></div>
+            <div class="day today"><div class="day-label">ศ</div><div class="day-dot" style="background: var(--st-present)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 3 · wallet -->
+      <div id="s-wal" class="clip scene" data-start="4.8" data-duration="2.4" data-track-index="4">
+        <div class="mask headline-mask"><div id="h-wal" class="headline">กระเป๋าเงินในมือ</div></div>
+        <div id="hero-wal" class="hero glass shimmer-sweep-target">
+          <div class="hero-head">
+            <div class="disc wal">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" /></svg>
+            </div>
+            <div class="hero-title">กระเป๋าเงิน</div>
+            <div class="meta-pill mono">DSCHOOL PAY</div>
+          </div>
+          <div id="w-eyebrow">ยอดเงินคงเหลือ</div>
+          <div id="balance">
+            <span id="bal-cur">฿</span>
+            <span id="bal-num" class="hf-number-wheel" data-value="1,250"></span>
+            <span id="bal-dec">.00</span>
+          </div>
+          <div id="topup"><span class="amt">+฿500</span><span class="txt">เติมเงินสำเร็จ</span></div>
+          <div id="chart-label">ใช้จ่าย 7 วัน</div>
+          <div id="bars">
+            <div class="bar" style="height: 42%"></div>
+            <div class="bar" style="height: 70%"></div>
+            <div class="bar" style="height: 30%"></div>
+            <div class="bar" style="height: 88%"></div>
+            <div class="bar" style="height: 56%"></div>
+            <div class="bar" style="height: 22%"></div>
+            <div class="bar today" style="height: 64%"></div>
+          </div>
+          <div id="bar-labels"><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span><span>อา</span></div>
+        </div>
+      </div>
+
+      <!-- Frame 4 · QR pay -->
+      <div id="s-qr" class="clip scene" data-start="7.2" data-duration="2.4" data-track-index="4">
+        <div class="mask headline-mask"><div id="h-qr" class="headline">จ่ายด้วย QR</div></div>
+        <div id="hero-qr" class="hero glass shimmer-sweep-target">
+          <div class="hero-head">
+            <div class="disc qrc">
+              <svg class="icon" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1" /><rect width="5" height="5" x="16" y="3" rx="1" /><rect width="5" height="5" x="3" y="16" rx="1" /><path d="M21 16h-3a2 2 0 0 0-2 2v3" /><path d="M21 21v.01" /><path d="M12 7v3a2 2 0 0 1-2 2H7" /><path d="M3 12h.01" /><path d="M12 3h.01" /><path d="M12 16v.01" /><path d="M16 12h1" /><path d="M21 12v.01" /><path d="M12 21v-1" /></svg>
+            </div>
+            <div class="hero-title">QR จ่ายเงิน</div>
+            <div id="countdown" class="meta-pill mono">0:59</div>
+          </div>
+          <div id="qr-paper">
+            <div id="qr-data"><svg viewBox="0 0 25 25" shape-rendering="crispEdges"><path id="qr-path" fill="#000000" d="" /></svg></div>
+            <div class="finder" id="finder-a" style="left: 37.5px; top: 37.5px"></div>
+            <div class="finder" id="finder-b" style="left: 415.5px; top: 37.5px"></div>
+            <div class="finder" id="finder-c" style="left: 37.5px; top: 415.5px"></div>
+            <div id="qr-logo">D</div>
+            <div id="scanline"></div>
+          </div>
+          <svg id="trace" viewBox="0 0 920 1000">
+            <path
+              id="trace-path"
+              pathLength="1"
+              d="M 460 172 H 718 A 56 56 0 0 1 774 228 V 744 A 56 56 0 0 1 718 800 H 202 A 56 56 0 0 1 146 744 V 228 A 56 56 0 0 1 202 172 Z"
+              fill="none"
+              stroke="var(--st-present)"
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="1 2"
+              stroke-dashoffset="1"
+            />
+          </svg>
+          <div id="toast-row">
+            <div id="toast">
+              <div class="check-disc"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg></div>
+              <span class="t1">จ่ายแล้ว</span><span class="t2">฿35.00</span><span class="t3">· โรงอาหาร</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 5 · leave -->
+      <div id="s-lv" class="clip scene" data-start="9.6" data-duration="2.4" data-track-index="4">
+        <div class="mask headline-mask"><div id="h-lv" class="headline">ส่งใบลาในไม่กี่แตะ</div></div>
+        <div id="hero-lv" class="hero glass shimmer-sweep-target">
+          <div class="hero-head">
+            <div class="disc lv">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
+            </div>
+            <div class="hero-title">ใบลา</div>
+            <div class="meta-pill"><span class="sick-dot"></span>ลาป่วย</div>
+          </div>
+          <div id="lv-sub">1 วัน · 30 ก.ย. 2569</div>
+          <div class="conn" style="top: 406px"><div class="conn-fill" id="conn-1"></div></div>
+          <div class="conn" style="top: 596px"><div class="conn-fill" id="conn-2"></div></div>
+          <div class="step" id="step-1" style="top: 310px">
+            <div class="step-dot"><div class="step-fill" id="fill-1"><svg viewBox="0 0 24 24"><path id="chk-1" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1" d="M20 6 9 17l-5-5" /></svg></div></div>
+            <div class="step-label">ส่งใบลาแล้ว</div>
+            <div class="step-time">08:02</div>
+          </div>
+          <div class="step" id="step-2" style="top: 500px">
+            <div class="step-dot"><div class="step-fill" id="fill-2"><svg viewBox="0 0 24 24"><path id="chk-2" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1" d="M20 6 9 17l-5-5" /></svg></div></div>
+            <div class="step-label">ครูที่ปรึกษาอนุมัติ</div>
+            <div class="step-time">08:15</div>
+          </div>
+          <div class="step" id="step-3" style="top: 690px">
+            <div class="step-dot"><div class="step-fill" id="fill-3"><svg viewBox="0 0 24 24"><path id="chk-3" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1" d="M20 6 9 17l-5-5" /></svg></div></div>
+            <div class="step-label">บันทึกในระบบแล้ว</div>
+            <div class="step-time">08:16</div>
+          </div>
+          <div id="badge">
+            <div class="check-disc"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg></div>
+            อนุมัติแล้ว
+          </div>
+        </div>
+      </div>
+
+      <!-- Frame 6 · finale headline + sheen -->
+      <div id="finale" class="clip" data-start="12" data-duration="2.5" data-track-index="6">
+        <div id="final-1-mask" class="mask final-mask"><div id="final-1" class="final-line">ทุกเรื่องในโรงเรียน</div></div>
+        <div id="final-2-mask" class="mask final-mask"><div id="final-2" class="final-line">ในแอปเดียว</div></div>
+      </div>
+    </div>
+
+    <!-- Registry component: number-wheel (builds one reel per digit). -->
+    <script>
+      (function () {
+        const vars =
+          window.__hyperframes && window.__hyperframes.getVariables
+            ? window.__hyperframes.getVariables()
+            : {};
+        const spins = { single: 0, double: 1, triple: 2 };
+        const gaps = { tight: "0em", standard: "0.02em", wide: "0.14em" };
+        const tones = { inherit: "inherit", ink: "#18181b", paper: "#fafafa", accent: "var(--brand, #34d399)" };
+        const pick = (table, value, fallback) =>
+          Object.prototype.hasOwnProperty.call(table, value) ? table[value] : table[fallback];
+        const cycles = pick(spins, vars.spin, "double");
+        const gap = pick(gaps, vars.spacing, "tight");
+        const tone = pick(tones, vars.tone, "inherit");
+        document.querySelectorAll(".hf-number-wheel").forEach((el) => {
+          if (el.dataset.hfNumberWheelReady === "1") return;
+          el.style.setProperty("--hf-wheel-gap", gap);
+          el.style.setProperty("--hf-wheel-color", tone);
+          const value = el.dataset.value || "0";
+          el.textContent = "";
+          for (const char of value) {
+            if (!/\d/.test(char)) {
+              el.append(document.createTextNode(char));
+              continue;
+            }
+            const stops = cycles * 10 + Number(char);
+            const frame = document.createElement("span");
+            frame.className = "hf-number-wheel-digit";
+            const strip = document.createElement("span");
+            strip.className = "hf-number-wheel-strip";
+            strip.style.setProperty("--hf-number-target-y", `${-stops}em`);
+            for (let i = 0; i <= stops; i++) {
+              const step = document.createElement("span");
+              step.textContent = String(i % 10);
+              strip.appendChild(step);
+            }
+            frame.appendChild(strip);
+            el.appendChild(frame);
+          }
+          el.dataset.hfNumberWheelReady = "1";
+        });
+      })();
+    </script>
+
+    <!-- Registry component: shimmer-sweep (injects the moving highlight mask). -->
+    <script>
+      (function () {
+        document.querySelectorAll(".shimmer-sweep-target").forEach((el) => {
+          if (!el.querySelector(".shimmer-mask")) {
+            const mask = document.createElement("div");
+            mask.className = "shimmer-mask";
+            el.appendChild(mask);
+          }
+        });
+      })();
+    </script>
+
+    <script>
+      (function () {
+        const root = document.getElementById("root");
+        const vars =
+          window.__hyperframes && window.__hyperframes.getVariables
+            ? window.__hyperframes.getVariables()
+            : {};
+        root.dataset.theme = vars.theme === "dark" ? "dark" : "light";
+
+        gsap.registerPlugin(CustomEase);
+        // The app's own curves (src/theme/motion.ts).
+        CustomEase.create("dsBase", "M0,0 C0.52,0.01 0,1 1,1");
+        CustomEase.create("dsOut", "M0,0 C0.16,1 0.3,1 1,1");
+
+        const cssVar = (name) => getComputedStyle(root).getPropertyValue(name).trim();
+
+        // ── Deterministic QR-style matrix (decorative; not a scannable code) ────
+        const N = 25;
+        let seed = 2569;
+        const rand = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+        const inFinder = (x, y) =>
+          (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9);
+        const inLogo = (x, y) => x >= 10 && x <= 14 && y >= 10 && y <= 14;
+        let d = "";
+        for (let y = 0; y < N; y++) {
+          for (let x = 0; x < N; x++) {
+            const r = rand();
+            if (inFinder(x, y) || inLogo(x, y)) continue;
+            const timing = (x === 6 || y === 6) && (x + y) % 2 === 0;
+            if (timing || (x !== 6 && y !== 6 && r < 0.5)) d += `M${x} ${y}h1v1h-1z`;
+          }
+        }
+        document.getElementById("qr-path").setAttribute("d", d);
+
+        // ── Attendance ring arcs (round caps trimmed so segments never touch) ──
+        const R = 240;
+        const CX = 260;
+        const CAP = (20 / R) * (180 / Math.PI);
+        const GAP = 3;
+        const segs = [
+          { f: 0.84, c: "var(--st-present)" },
+          { f: 0.08, c: "var(--st-late)" },
+          { f: 0.04, c: "var(--st-sick)" },
+          { f: 0.04, c: "var(--st-personal)" },
+        ];
+        const pt = (deg) => {
+          const a = ((deg - 90) * Math.PI) / 180;
+          return `${(CX + R * Math.cos(a)).toFixed(2)} ${(CX + R * Math.sin(a)).toFixed(2)}`;
+        };
+        const segG = document.getElementById("ring-segs");
+        let acc = 0;
+        const arcs = segs.map((s) => {
+          const a0 = acc * 360;
+          acc += s.f;
+          const a1 = acc * 360;
+          const start = a0 + CAP + GAP / 2;
+          const end = Math.max(start + 0.2, a1 - CAP - GAP / 2);
+          const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          p.setAttribute("d", `M ${pt(start)} A ${R} ${R} 0 ${end - start > 180 ? 1 : 0} 1 ${pt(end)}`);
+          p.setAttribute("fill", "none");
+          p.setAttribute("stroke", s.c);
+          p.setAttribute("stroke-width", "40");
+          p.setAttribute("stroke-linecap", "round");
+          p.setAttribute("pathLength", "1");
+          p.setAttribute("stroke-dasharray", "1 2");
+          p.setAttribute("stroke-dashoffset", "1");
+          p.style.opacity = "0";
+          segG.appendChild(p);
+          // Sweep angles include the caps so the draw reads as one continuous pass.
+          return { el: p, from: start - CAP, to: end + CAP };
+        });
+
+        // ── Layout constants (authored CSS positions) ───────────────────────────
+        const CHIP_SCALE = 0.38;
+        const CHIP_CY = 1800;
+        const chipCx = [0, 1, 2, 3].map((j) => 166.6 + 83.6 + j * 193.2);
+        const tileC = [
+          [300, 960],
+          [780, 960],
+          [300, 1400],
+          [780, 1400],
+        ];
+        const HERO_C = [540, 1120];
+        const HERO_SCALE = 167 / 920;
+        const WM_CY = 1035;
+        const WM_TARGET = { left: 80, cy: 214, scale: 0.33 };
+
+        function build() {
+          const tl = gsap.timeline({ paused: true });
+          const orbOpacity = parseFloat(cssVar("--orb-opacity")) || 0.5;
+          const haloOpacity = parseFloat(cssVar("--halo-opacity")) || 0.6;
+
+          // ── Ambient: orbs bloom, then drift on finite sine loops ──────────────
+          const drift = [
+            [70, 90],
+            [-80, 60],
+            [90, -70],
+            [-60, -90],
+          ];
+          ["#orb-1", "#orb-2", "#orb-3", "#orb-4"].forEach((sel, i) => {
+            tl.fromTo(
+              sel,
+              { scale: 0.72, opacity: 0 },
+              { scale: 1, opacity: orbOpacity, duration: 1.5, ease: "dsOut" },
+              0.05 + i * 0.12,
+            );
+            tl.fromTo(
+              `${sel} .orb`,
+              { x: 0, y: 0 },
+              { x: drift[i][0], y: drift[i][1], duration: 3.6, ease: "sine.inOut", yoyo: true, repeat: 3 },
+              0,
+            );
+          });
+
+          // ── Frame 1 · welcome ─────────────────────────────────────────────────
+          tl.fromTo("#halo-pos", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: haloOpacity, duration: 1.3, ease: "dsOut" }, 0.1);
+          tl.fromTo("#halo", { rotation: 0 }, { rotation: 140, duration: 2.6, ease: "none" }, 0);
+          tl.fromTo("#welcome-line", { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "dsOut" }, 0.3);
+          tl.fromTo(
+            "#wordmark .wm-ch",
+            { yPercent: 118 },
+            { yPercent: 0, duration: 0.95, ease: "dsOut", stagger: 0.045 },
+            0.42,
+          );
+          tl.fromTo("#hello", { y: 44, scale: 0.84, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.75, ease: "back.out(1.5)" }, 1.1);
+          tl.fromTo("#school", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "dsOut" }, 1.3);
+          tl.fromTo(
+            "#hello",
+            { "--shimmer-pos": "-20%", "--shimmer-width": "34%", "--shimmer-color": "rgba(255,255,255,0.85)" },
+            { "--shimmer-pos": "120%", duration: 0.9, ease: "power2.inOut", immediateRender: false },
+            1.35,
+          );
+          tl.fromTo(
+            ["#welcome-line", "#hello", "#school"],
+            { y: 0, opacity: 1 },
+            { y: -34, opacity: 0, duration: 0.35, ease: "power2.in", stagger: 0.04, immediateRender: false },
+            1.95,
+          );
+          tl.fromTo("#halo-pos", { scale: 1, opacity: haloOpacity }, { scale: 1.25, opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false }, 1.95);
+
+          // Wordmark docks top-left and stays as the anchor.
+          const wm = document.getElementById("wordmark");
+          const wmW = wm.offsetWidth;
+          const dockDx = WM_TARGET.left + (wmW * WM_TARGET.scale) / 2 - 540;
+          const dockDy = WM_TARGET.cy - WM_CY;
+          tl.fromTo(
+            "#wordmark",
+            { x: 0, y: 0, scale: 1 },
+            { x: dockDx, y: dockDy, scale: WM_TARGET.scale, duration: 0.62, ease: "dsBase" },
+            2.0,
+          );
+
+          // Tray chips rise in (empty glass, dim icons).
+          for (let i = 0; i < 4; i++) {
+            const dx = chipCx[i] - tileC[i][0];
+            const dy = CHIP_CY - tileC[i][1];
+            tl.fromTo(
+              `#tile-${i}`,
+              { x: dx, y: dy + 90, scale: CHIP_SCALE, opacity: 0 },
+              { x: dx, y: dy, scale: CHIP_SCALE, opacity: 1, duration: 0.6, ease: "dsOut" },
+              2.24 + i * 0.06,
+            );
+          }
+
+          // ── Feature scenes ────────────────────────────────────────────────────
+          const inkVars = ["--att-ink", "--wal-ink", "--qr-ink", "--lv-ink"];
+          const scenes = [
+            { id: "att", s: 2.4 },
+            { id: "wal", s: 4.8 },
+            { id: "qr", s: 7.2 },
+            { id: "lv", s: 9.6 },
+          ];
+          scenes.forEach(({ id, s }, k) => {
+            // Chapter ticker.
+            // Outgoing and incoming labels share one tween shape, so they move as a single strip.
+            tl.fromTo(`#ch-${k + 1}`, { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: "dsBase" }, s - 0.05);
+            if (k > 0) {
+              tl.fromTo(`#ch-${k}`, { yPercent: 0 }, { yPercent: -110, duration: 0.5, ease: "dsBase", immediateRender: false }, s - 0.05);
+            }
+            // Headline rises through its mask; card lifts in.
+            tl.fromTo(`#h-${id}`, { yPercent: 105 }, { yPercent: 0, duration: 0.75, ease: "dsOut" }, s);
+            tl.fromTo(
+              `#hero-${id}`,
+              { y: 240, scale: 0.94, opacity: 0 },
+              { y: 0, scale: 1, opacity: 1, duration: 0.75, ease: "dsOut" },
+              s + 0.08,
+            );
+            tl.fromTo(
+              `#hero-${id}`,
+              { "--shimmer-pos": "-20%", "--shimmer-width": "30%", "--shimmer-angle": "115deg", "--shimmer-color": "rgba(255,255,255,0.7)" },
+              { "--shimmer-pos": "120%", duration: 0.95, ease: "power2.inOut", immediateRender: false },
+              s + 0.5,
+            );
+            // Exit: headline lifts away, card docks into its tray chip.
+            tl.fromTo(`#h-${id}`, { yPercent: 0 }, { yPercent: -105, duration: 0.34, ease: "power2.in", immediateRender: false }, s + 1.93);
+            tl.fromTo(
+              `#hero-${id}`,
+              { x: 0, y: 0, scale: 1 },
+              {
+                x: chipCx[k] - HERO_C[0],
+                y: CHIP_CY - HERO_C[1],
+                scale: HERO_SCALE,
+                duration: 0.46,
+                ease: "dsBase",
+                immediateRender: false,
+              },
+              s + 1.94,
+            );
+            tl.fromTo(`#hero-${id}`, { opacity: 1 }, { opacity: 0, duration: 0.14, ease: "none", immediateRender: false }, s + 2.24);
+            // Chip lights up in its feature pastel.
+            const t = s + 2.26;
+            tl.fromTo(`#tile-${k} .tile-fill`, { opacity: 0 }, { opacity: 1, duration: 0.28, ease: "power1.out", immediateRender: false }, t);
+            // Each pop starts from its resting state so backward seeks never flash.
+            tl.fromTo(
+              `#tile-${k} .chip-icon`,
+              { opacity: 0.4, color: cssVar("--text2") },
+              { opacity: 1, color: cssVar(inkVars[k]), duration: 0.28, ease: "power1.out", immediateRender: false },
+              t,
+            );
+            tl.fromTo(`#tile-${k} .chip-icon`, { scale: 1 }, { scale: 0.74, duration: 0.08, ease: "power1.in", immediateRender: false }, t);
+            tl.fromTo(`#tile-${k} .chip-icon`, { scale: 0.74 }, { scale: 1, duration: 0.45, ease: "back.out(3)", immediateRender: false }, t + 0.08);
+            tl.fromTo(`#tile-${k} .ring-bloom`, { opacity: 0, scale: 0.6 }, { opacity: 0.85, scale: 0.66, duration: 0.06, ease: "none", immediateRender: false }, t + 0.02);
+            tl.fromTo(
+              `#tile-${k} .ring-bloom`,
+              { opacity: 0.85, scale: 0.66 },
+              { opacity: 0, scale: 1.35, duration: 0.64, ease: "power2.out", immediateRender: false },
+              t + 0.08,
+            );
+          });
+          tl.fromTo("#ch-4", { yPercent: 0 }, { yPercent: -110, duration: 0.35, ease: "power2.in", immediateRender: false }, 11.95);
+
+          // Frame 2 · attendance — ring sweep + count-up + week dots.
+          const A = 2.4;
+          const ring = { p: 0 };
+          tl.fromTo(
+            ring,
+            { p: 0 },
+            {
+              p: 360,
+              duration: 1.3,
+              ease: "dsBase",
+              immediateRender: false,
+              onUpdate: () => {
+                arcs.forEach((a) => {
+                  const v = Math.min(1, Math.max(0, (ring.p - a.from) / (a.to - a.from)));
+                  a.el.style.opacity = v > 0 ? "1" : "0";
+                  a.el.setAttribute("stroke-dashoffset", String(1 - v));
+                });
+              },
+            },
+            A + 0.35,
+          );
+          const count = { n: 0 };
+          const ringNum = document.getElementById("ring-num");
+          tl.fromTo(
+            count,
+            { n: 0 },
+            {
+              n: 92,
+              duration: 1.3,
+              ease: "dsBase",
+              immediateRender: false,
+              onUpdate: () => {
+                ringNum.textContent = `${Math.round(count.n)}%`;
+              },
+            },
+            A + 0.35,
+          );
+          tl.fromTo("#ring-num", { scale: 0.86 }, { scale: 1, duration: 1.3, ease: "dsBase" }, A + 0.35);
+          tl.fromTo("#week .day", { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "dsOut", stagger: 0.05 }, A + 0.55);
+          tl.fromTo("#week .day-dot", { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(2.4)", stagger: 0.07 }, A + 0.9);
+
+          // Frame 3 · wallet — odometer balance, top-up chip, spend bars.
+          const W = 4.8;
+          tl.fromTo(
+            "#bal-num .hf-number-wheel-strip",
+            { y: "0em" },
+            {
+              y: (_, strip) => strip.style.getPropertyValue("--hf-number-target-y"),
+              duration: 1.25,
+              ease: "dsOut",
+              stagger: 0.07,
+            },
+            W + 0.35,
+          );
+          tl.fromTo("#topup", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }, W + 1.2);
+          tl.fromTo(["#chart-label", "#bar-labels"], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "dsOut", stagger: 0.08 }, W + 0.75);
+          tl.fromTo("#bars .bar", { scaleY: 0, transformOrigin: "50% 100%" }, { scaleY: 1, duration: 0.6, ease: "dsOut", stagger: 0.06 }, W + 0.9);
+
+          // Frame 4 · QR — finders pop, modules reveal, scan, trace, receipt.
+          const Q = 7.2;
+          tl.fromTo([".finder", "#qr-logo"], { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(2.4)", stagger: 0.08 }, Q + 0.35);
+          tl.fromTo(
+            "#qr-data",
+            { clipPath: "circle(0% at 50% 50%)" },
+            { clipPath: "circle(75% at 50% 50%)", duration: 0.7, ease: "dsOut" },
+            Q + 0.5,
+          );
+          tl.fromTo("#scanline", { y: 0 }, { y: 548, duration: 0.5, ease: "sine.inOut" }, Q + 0.98);
+          tl.fromTo("#scanline", { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "none", immediateRender: false }, Q + 0.98);
+          tl.fromTo("#scanline", { opacity: 1 }, { opacity: 0, duration: 0.1, ease: "none", immediateRender: false }, Q + 1.38);
+          tl.fromTo("#trace-path", { strokeDashoffset: 1, opacity: 0 }, { strokeDashoffset: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, Q + 1.22);
+          tl.fromTo("#toast", { y: 30, scale: 0.9, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.8)" }, Q + 1.5);
+          const clock = { t: 0 };
+          const countdown = document.getElementById("countdown");
+          tl.fromTo(
+            clock,
+            { t: 0 },
+            {
+              t: 2.4,
+              duration: 2.4,
+              ease: "none",
+              immediateRender: false,
+              onUpdate: () => {
+                countdown.textContent = `0:${String(59 - Math.floor(clock.t)).padStart(2, "0")}`;
+              },
+            },
+            Q,
+          );
+
+          // Frame 5 · leave — steps light in turn, connectors fill, badge.
+          const L = 9.6;
+          tl.fromTo(["#lv-sub", "#step-1", "#step-2", "#step-3"], { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "dsOut", stagger: 0.07 }, L + 0.28);
+          [1, 2, 3].forEach((n, i) => {
+            const at = L + 0.45 + i * 0.44;
+            tl.fromTo(`#fill-${n}`, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.38, ease: "back.out(2)" }, at);
+            tl.fromTo(`#chk-${n}`, { strokeDashoffset: 1, opacity: 0 }, { strokeDashoffset: 0, opacity: 1, duration: 0.28, ease: "power2.out" }, at + 0.12);
+            if (n < 3) {
+              tl.fromTo(`#conn-${n}`, { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.24, ease: "power1.inOut" }, at + 0.22);
+            }
+          });
+          tl.fromTo("#badge", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)" }, L + 1.5);
+
+          // ── Frame 6 · the tray unfolds into the Home bento ─────────────────────
+          const F = 12.0;
+          for (let i = 0; i < 4; i++) {
+            const dx = chipCx[i] - tileC[i][0];
+            const dy = CHIP_CY - tileC[i][1];
+            tl.fromTo(
+              `#tile-${i}`,
+              { x: dx, y: dy, scale: CHIP_SCALE },
+              { x: 0, y: 0, scale: 1, duration: 0.9, ease: "dsBase", immediateRender: false },
+              F + 0.05 + i * 0.07,
+            );
+            tl.fromTo(
+              `#tile-${i} .chip-icon`,
+              { opacity: 1, scale: 1 },
+              { opacity: 0, scale: 0.6, duration: 0.3, ease: "power2.in", immediateRender: false },
+              F + 0.1 + i * 0.07,
+            );
+            tl.fromTo(
+              `#tile-${i} .tile-body`,
+              { opacity: 0, y: 26 },
+              { opacity: 1, y: 0, duration: 0.55, ease: "dsOut", immediateRender: false },
+              F + 0.55 + i * 0.07,
+            );
+          }
+          tl.fromTo("#final-1", { yPercent: 105 }, { yPercent: 0, duration: 0.8, ease: "dsOut" }, F + 0.3);
+          tl.fromTo("#final-2", { yPercent: 105 }, { yPercent: 0, duration: 0.8, ease: "dsOut" }, F + 0.45);
+          // One gloss pass travels diagonally across the finished grid.
+          for (let i = 0; i < 4; i++) {
+            const at = F + 1.0 + ((i % 2) + Math.floor(i / 2)) * 0.14;
+            tl.fromTo(`#tile-${i} .tile-sheen`, { x: -220, rotation: 18, opacity: 0 }, { x: -220, rotation: 18, opacity: 1, duration: 0.05, ease: "none" }, at);
+            tl.fromTo(`#tile-${i} .tile-sheen`, { x: -220 }, { x: 520, duration: 0.75, ease: "power1.inOut", immediateRender: false }, at + 0.05);
+          }
+
+          window.__timelines["main"] = tl;
+          tl.seek(0);
+        }
+
+        document.fonts.ready.then(build);
+      })();
+    </script>
+  </body>
+</html>

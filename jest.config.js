@@ -9,7 +9,8 @@ module.exports = {
     // lucide's package exports resolve to an .mjs ESM build that Jest doesn't transform; use its CJS build.
     '^lucide-react-native$': '<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/.superpowers/', '/.export-check/'],
+  // .claude/ holds agent worktrees and vendored skills; motion/ is the HyperFrames video projects.
+  testPathIgnorePatterns: ['/node_modules/', '/.superpowers/', '/.export-check/', '<rootDir>/.claude/', '<rootDir>/motion/'],
   transformIgnorePatterns: [
     '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|standard-navigation|lucide-react-native))',
     '/node_modules/react-native-reanimated/plugin/',

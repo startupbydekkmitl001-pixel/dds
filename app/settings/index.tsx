@@ -1,4 +1,5 @@
-import { CalendarCheck, Database, FileText, Info, LogOut, Megaphone, ScanFace, ShieldCheck, Wallet } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { CalendarCheck, CirclePlay, Database, FileText, Info, LogOut, Megaphone, ScanFace, ShieldCheck, Wallet } from 'lucide-react-native';
 import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { StaggerIn } from '@/components/motion';
@@ -77,6 +78,7 @@ export default function SettingsScreen() {
 
       <Section title="เกี่ยวกับ" index={3}>
         <Card padded={false}>
+          <ListRow icon={CirclePlay} title="แนะนำแอป" subtitle="ดูวิดีโอแนะนำ Dschool อีกครั้ง" onPress={() => router.push('/intro')} />
           <ListRow icon={Info} title="Dschool" value="เวอร์ชัน 1.0.0 (เดโม)" chevron={false} />
           <ListRow icon={Database} title="ข้อมูลทั้งหมดเป็นข้อมูลตัวอย่าง" subtitle="ไม่มีการชำระเงินหรือส่งข้อมูลจริง" chevron={false} />
         </Card>

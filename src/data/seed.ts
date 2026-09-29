@@ -24,10 +24,13 @@ import type {
 
 export const DEMO_PIN = '123456';
 
+/** The school this prototype is shown to. Its emblem is the animated seal on the student card. */
+export const SCHOOL_NAME = 'โรงเรียนราชดำริ';
+
 export const SCHOOL_ACCOUNT = {
   bank: 'ธนาคารตัวอย่าง',
   number: '123-4-56789-0',
-  name: 'โรงเรียนตัวอย่างวิทยา',
+  name: SCHOOL_NAME,
 } as const;
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -35,6 +38,7 @@ export const DEFAULT_SETTINGS: Settings = {
   faceId: true,
   notify: { topup: true, leave: true, announcement: true, attendance: true, behavior: true },
   demo: { visible: false, networkErrors: false, slipMode: 'auto', fastLeave: false, arrival: 'arrived' },
+  introSeen: false,
 };
 
 export interface AppData {
@@ -54,7 +58,7 @@ const STUDENT: Student = {
   lastName: 'ศรีสุข',
   nickname: 'ภูมิ',
   classroom: 'ม.5/3',
-  school: 'โรงเรียนตัวอย่างวิทยา',
+  school: SCHOOL_NAME,
   phone: null,
   guardianName: 'นางสมศรี ศรีสุข',
   guardianPhone: '081-234-5678',

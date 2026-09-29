@@ -7,6 +7,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { GlassLayers } from './Glass';
 import { Icon, type LucideIcon } from './Icon';
 import { Text } from './Text';
+import { TileArt } from './TileArt';
+import { tileArtFor } from './tileArtSources';
 
 /** Where the sphere floats in each feature's little scene, so the bento doesn't feel stamped out. */
 const SCENE: Record<FeatureKey, { orb: { x: number; y: number }; size: number; lights: [number, number][] }> = {
@@ -19,8 +21,9 @@ const SCENE: Record<FeatureKey, { orb: { x: number; y: number }; size: number; l
 };
 
 /**
- * Bento tile: a small pastel scene (soft light + a floating glossy sphere) on
- * top, the live number and label below on frosted glass. The colour is the feature.
+ * Bento tile: a small scene on top, the live number and label below on frosted glass. The
+ * colour is the feature. Features with rendered art play its seamless loop; the others keep
+ * the pastel scene (soft light + a floating glossy sphere).
  */
 export function Tile({
   feature: key,
@@ -39,27 +42,38 @@ export function Tile({
   onPress: () => void;
   index?: number;
 }) {
-  const { feature, radius, elevation } = useTheme();
+  const { c, feature, radius, elevation, scheme } = useTheme();
   const f = feature[key];
   const scene = SCENE[key];
+  const art = tileArtFor(key, scheme);
   return (
     <PressableScale
       haptic="light"
       onPress={onPress}
       accessibilityLabel={[value, label, caption].filter(Boolean).join(' ')}
-      style={[styles.tile, { borderRadius: radius.tile, boxShadow: elevation.low }]}
+      style={[styles.tile, art ? styles.tileArt : null, { borderRadius: radius.tile, boxShadow: elevation.low }]}
     >
       <GlassLayers radius={radius.tile} />
-      <View style={[styles.scene, { backgroundColor: f.fill }]}>
-        <Aurora
-          drift={false}
-          orbs={scene.lights.map(([x, y], i) => ({ color: f.glow, x, y, r: i === 0 ? 0.6 : 0.45, opacity: i === 0 ? 0.75 : 0.5 }))}
-        />
-        <View style={[styles.orb, { left: `${scene.orb.x * 100}%`, top: `${scene.orb.y * 100}%` }]}>
-          <GlossOrb size={scene.size} color={f.fill} deep={f.glow} delay={index * 450} />
+      {art ? (
+        <View style={[styles.scene, styles.sceneArt, { backgroundColor: f.fill, borderColor: c.glassBorder }]}>
+          <TileArt art={art} />
+          {/* A frosted chip keeps the icon legible over any frame of the loop. */}
+          <View style={[styles.chip, { backgroundColor: c.glassStrong, borderColor: c.glassBorder }]}>
+            <Icon icon={icon} color={f.ink} size={18} />
+          </View>
         </View>
-        <Icon icon={icon} color={f.ink} size={20} />
-      </View>
+      ) : (
+        <View style={[styles.scene, { backgroundColor: f.fill }]}>
+          <Aurora
+            drift={false}
+            orbs={scene.lights.map(([x, y], i) => ({ color: f.glow, x, y, r: i === 0 ? 0.6 : 0.45, opacity: i === 0 ? 0.75 : 0.5 }))}
+          />
+          <View style={[styles.orb, { left: `${scene.orb.x * 100}%`, top: `${scene.orb.y * 100}%` }]}>
+            <GlossOrb size={scene.size} color={f.fill} deep={f.glow} delay={index * 450} />
+          </View>
+          <Icon icon={icon} color={f.ink} size={20} />
+        </View>
+      )}
       <View style={styles.body}>
         {value !== undefined ? (
           <Text variant="title" size={30} numberOfLines={1}>
@@ -79,7 +93,11 @@ export function Tile({
 
 const styles = StyleSheet.create({
   tile: { flex: 1, padding: 6, minHeight: 176 },
+  // Looping art gets a taller stage so the scene can breathe.
+  tileArt: { minHeight: 202 },
   scene: { height: 78, borderRadius: 22, overflow: 'hidden', padding: 12 },
+  sceneArt: { height: 104, padding: 0, borderWidth: 1 },
+  chip: { position: 'absolute', top: 9, left: 9, width: 34, height: 34, borderRadius: 17, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   orb: { position: 'absolute' },
   body: { paddingHorizontal: 10, paddingTop: 8, paddingBottom: 8, gap: 0, flex: 1, justifyContent: 'flex-end' },
 });

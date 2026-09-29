@@ -1,10 +1,64 @@
-import { DEFAULT_SETTINGS, buildSeed } from '@/data/seed';
+import type { StateStorage } from 'zustand/middleware';
+import { DEFAULT_SETTINGS, SCHOOL_ACCOUNT, SCHOOL_NAME, buildSeed } from '@/data/seed';
 import { unreadCount } from '@/data/selectors';
 import { createAppStore } from '@/data/store';
 
 const T = new Date(2026, 8, 29, 9).getTime();
 const fresh = () => createAppStore(buildSeed(new Date(T)), { persist: false });
 const seedWallet = buildSeed(new Date(T)).wallet;
+
+describe('school identity', () => {
+  const OLD_SAMPLE_SCHOOL = 'โรงเรียนตัวอย่างวิทยา';
+  const memoryStorage = (initial: Record<string, string> = {}): StateStorage => {
+    const m = { ...initial };
+    return { getItem: (k) => m[k] ?? null, setItem: (k, v) => void (m[k] = v), removeItem: (k) => void delete m[k] };
+  };
+  const savedBeforeRename = (school: string) =>
+    JSON.stringify({ state: { ...buildSeed(new Date(T)), student: { ...buildSeed(new Date(T)).student, school } }, version: 1 });
+
+  test('the sample student and the top-up recipient belong to Rajadamri school', () => {
+    expect(SCHOOL_NAME).toBe('โรงเรียนราชดำริ');
+    expect(buildSeed(new Date(T)).student.school).toBe(SCHOOL_NAME);
+    expect(SCHOOL_ACCOUNT.name).toBe(SCHOOL_NAME);
+  });
+
+  test('a save from before the rename is updated when the app launches', () => {
+    const storage = memoryStorage({ 'dschool-app-v1': savedBeforeRename(OLD_SAMPLE_SCHOOL) });
+    const st = createAppStore(buildSeed(new Date(T)), { storage });
+    expect(st.getState().hydrated).toBe(true);   // sync storage hydrates while the store is created
+    expect(st.getState().student.school).toBe(SCHOOL_NAME);
+  });
+
+  test('a school someone typed in themselves is left alone', () => {
+    const storage = memoryStorage({ 'dschool-app-v1': savedBeforeRename('โรงเรียนอื่น') });
+    const st = createAppStore(buildSeed(new Date(T)), { storage });
+    expect(st.getState().hydrated).toBe(true);   // sync storage hydrates while the store is created
+    expect(st.getState().student.school).toBe('โรงเรียนอื่น');
+  });
+
+  test('the rest of an old save survives the migration', () => {
+    const seed = buildSeed(new Date(T));
+    const storage = memoryStorage({
+      'dschool-app-v1': JSON.stringify({ state: { ...seed, wallet: { ...seed.wallet, balance: 1234 }, student: { ...seed.student, school: OLD_SAMPLE_SCHOOL } }, version: 1 }),
+    });
+    const st = createAppStore(seed, { storage });
+    expect(st.getState().hydrated).toBe(true);   // sync storage hydrates while the store is created
+    expect(st.getState().wallet.balance).toBe(1234);
+  });
+});
+
+describe('welcome intro', () => {
+  test('a fresh install has not seen the intro', () => {
+    expect(fresh().getState().settings.introSeen).toBe(false);
+  });
+
+  test('a demo reset shows the intro again', () => {
+    const st = fresh();
+    st.getState().updateSettings({ introSeen: true });
+    st.getState().resetDemo(T);
+    expect(st.getState().settings.introSeen).toBe(false);
+  });
+});
 
 describe('slip top-ups', () => {
   test('auto mode credits once per clientId and raises an alert', () => {

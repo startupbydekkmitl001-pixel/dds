@@ -17,7 +17,7 @@ import { newId } from '@/lib/id';
 import { datesBetween, LEAVE_TYPE_LABEL, leaveDelayMs, nextLeaveStatus } from '@/lib/leave';
 import { INITIAL_GATE, type PinGate } from '@/lib/pin';
 import { SEMESTERS } from './calendar';
-import { buildSeed, DEFAULT_SETTINGS, type AppData } from './seed';
+import { buildSeed, DEFAULT_SETTINGS, SCHOOL_NAME, type AppData } from './seed';
 import type {
   AlertKind,
   AppAlert,
@@ -121,6 +121,18 @@ const LEAVE_ALERT_TITLE: Record<'approved' | 'recorded', string> = {
   approved: 'ครูที่ปรึกษาอนุมัติใบลาแล้ว',
   recorded: 'บันทึกใบลาในระบบแล้ว',
 };
+
+/** The placeholder school name used before the prototype adopted its real school. */
+const SAMPLE_SCHOOL_V1 = 'โรงเรียนตัวอย่างวิทยา';
+
+/** v2: saves that still carry the placeholder school move to SCHOOL_NAME; a school someone chose stays. */
+export function migratePersisted(persisted: unknown, version: number): AppState {
+  const state = persisted as AppState;
+  if (version < 2 && state?.student?.school === SAMPLE_SCHOOL_V1) {
+    return { ...state, student: { ...state.student, school: SCHOOL_NAME } };
+  }
+  return state;
+}
 
 export function createAppStore(
   initial: AppData,
@@ -275,7 +287,8 @@ export function createAppStore(
   const store = createStore<AppState>()(
     persist(creator, {
       name: 'dschool-app-v1',
-      version: 1,
+      version: 2,
+      migrate: migratePersisted,
       storage: createJSONStorage(() => opts.storage ?? AsyncStorage),
       partialize: (s) => {
         const { unlocked: _u, hydrated: _h, ...rest } = s;

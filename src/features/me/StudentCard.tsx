@@ -12,6 +12,7 @@ import { dur, ease } from '@/theme/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { qr, white } from '@/theme/tokens';
 import { MonogramAvatar } from './MonogramAvatar';
+import { SchoolSeal } from './SchoolSeal';
 
 /** Fine engraved contour lines, like a guilloché on a security card. */
 function contours(w: number, h: number): string {
@@ -24,7 +25,11 @@ function contours(w: number, h: number): string {
   return lines.join(' ');
 }
 
-/** Digital student pass: pastel holographic glass, pearly sheen that follows tilt, tap to flip to the QR back. */
+/**
+ * Digital student pass: pastel holographic glass, pearly sheen that follows tilt, tap to flip to the QR back.
+ * The school's animated seal sits top-left on the front and above the return note on the back; only the
+ * face that is showing plays it.
+ */
 export function StudentCard() {
   const { c, feature, radius, elevation } = useTheme();
   const reduced = useReducedMotion();
@@ -32,6 +37,7 @@ export function StudentCard() {
   const { width: screen } = useWindowDimensions();
   const width = Math.min(screen - 40, 420);
   const height = Math.round((width * 2) / 3);
+  const seal = Math.min(68, Math.max(52, Math.round(width * 0.17)));
   const [back, setBack] = useState(false);
   const flip = useSharedValue(0);
   const lines = useMemo(() => contours(width, height), [width, height]);
@@ -77,20 +83,23 @@ export function StudentCard() {
     <Pressable
       onPress={toggle}
       accessibilityRole="button"
-      accessibilityLabel={`บัตรนักเรียน ${student.firstName} ${student.lastName} ชั้น ${student.classroom} รหัส ${student.id}`}
+      accessibilityLabel={`บัตรนักเรียน ${student.firstName} ${student.lastName} ชั้น ${student.classroom} รหัส ${student.id} ${student.school}`}
       accessibilityHint="แตะเพื่อพลิกบัตร"
       style={{ width, height, alignSelf: 'center' }}
     >
       <Animated.View style={[face, front]} pointerEvents="none">
         {surface}
         <PrismShimmer radius={radius.tile} intensity={0.16} />
-        <View style={styles.row}>
-          <Text variant="eyebrow" color={c.idCardText}>
-            DSCHOOL · STUDENT ID
-          </Text>
-          <Text variant="caption" color={c.idCardText}>
-            {`ปีการศึกษา ${student.academicYear}`}
-          </Text>
+        <View style={styles.header}>
+          <SchoolSeal size={seal} active={!back} />
+          <View style={styles.flex}>
+            <Text variant="heading" size={18} color={c.idCardText} numberOfLines={1}>
+              {student.school}
+            </Text>
+            <Text variant="eyebrow" color={c.idCardText}>
+              DSCHOOL · STUDENT ID
+            </Text>
+          </View>
         </View>
         <View style={styles.identity}>
           <View style={[styles.avatarRing, { borderColor: white }]}>
@@ -109,8 +118,8 @@ export function StudentCard() {
           <Text variant="data" size={18} color={c.idCardText}>
             {`รหัส ${student.id}`}
           </Text>
-          <Text variant="caption" color={c.idCardText} numberOfLines={1} style={styles.school}>
-            {student.school}
+          <Text variant="caption" color={c.idCardText}>
+            {`ปีการศึกษา ${student.academicYear}`}
           </Text>
         </View>
       </Animated.View>
@@ -121,6 +130,9 @@ export function StudentCard() {
           <QRCode value={`STUDENT:${student.id}`} size={Math.round(height * 0.5)} color={qr.ink} backgroundColor={qr.paper} />
         </View>
         <View style={styles.flex}>
+          <View style={styles.backSeal}>
+            <SchoolSeal size={44} active={back} />
+          </View>
           <Text variant="label" color={c.idCardText}>
             {`ปีการศึกษา ${student.academicYear}`}
           </Text>
@@ -140,10 +152,11 @@ const styles = StyleSheet.create({
   face: { position: 'absolute', top: 0, left: 0, padding: 20, justifyContent: 'space-between', backfaceVisibility: 'hidden' },
   backFace: { flexDirection: 'row', alignItems: 'center', gap: 16, justifyContent: 'flex-start' },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  backSeal: { marginBottom: 10 },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   avatarRing: { borderRadius: 40, borderWidth: 2, padding: 2 },
   flex: { flex: 1 },
-  school: { flexShrink: 1, textAlign: 'right' },
   qrBox: { padding: 10, borderRadius: 16 },
   note: { marginTop: 8 },
 });

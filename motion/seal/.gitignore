@@ -1,0 +1,5 @@
+# Full-quality render master and QA frames. The app ships the compressed copy in
+# ../../assets/seal/ (see "School seal" in the root README).
+renders/
+snapshots/
+.hyperframes/

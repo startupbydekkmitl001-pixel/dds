@@ -37,6 +37,7 @@ function RootStack() {
         </Stack.Protected>
         <Stack.Protected guard={unlocked}>
           <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="intro" options={{ presentation: 'fullScreenModal', animation: 'fade', gestureEnabled: false }} />
           <Stack.Screen name="qr" options={{ presentation: 'modal' }} />
           <Stack.Screen name="wallet-history" />
           <Stack.Screen name="topup" options={{ presentation: 'modal' }} />

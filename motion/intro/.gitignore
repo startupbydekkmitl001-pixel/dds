@@ -1,0 +1,5 @@
+# Full-quality render masters (~12 MB each) and QA frames. The app ships the
+# compressed copies in ../../assets/intro/ — see "Welcome intro" in the root README.
+renders/
+snapshots/
+.hyperframes/

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=512, height=512" />
+    <title>โรงเรียนราชดำริ — seal loop</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 512px;
+        height: 512px;
+        overflow: hidden;
+        background: #e3e7f7; /* corners outside the disc; the app clips the video to a circle */
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      #seal {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        overflow: hidden;
+        /* Pearl: bright at the upper left, cooling toward the rim. */
+        background:
+          radial-gradient(circle at 36% 28%, #ffffff 0%, #f6f8ff 34%, #e3e9fb 68%, #d0d8f3 100%);
+      }
+
+      /* Thin golden sunburst behind the emblem. Its period is 15deg, and it turns exactly 15deg per loop. */
+      .burst {
+        position: absolute;
+        inset: -12%;
+        border-radius: 50%;
+        background: repeating-conic-gradient(from 0deg, rgba(255, 205, 40, 0.36) 0deg 2.6deg, rgba(255, 205, 40, 0) 2.6deg 15deg);
+        -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, #000 26%, transparent 70%);
+        mask-image: radial-gradient(circle closest-side, #000 0%, #000 26%, transparent 70%);
+      }
+      .burst.b2 {
+        background: repeating-conic-gradient(from 4deg, rgba(120, 150, 255, 0.22) 0deg 1.8deg, rgba(120, 150, 255, 0) 1.8deg 10deg);
+        -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, #000 20%, transparent 62%);
+        mask-image: radial-gradient(circle closest-side, #000 0%, #000 20%, transparent 62%);
+      }
+      /* A warm bloom that gives the gold something to glow into. */
+      .bloom {
+        position: absolute;
+        left: 50%;
+        top: 46%;
+        width: 360px;
+        height: 360px;
+        margin: -180px 0 0 -180px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.55) 40%, rgba(255, 255, 255, 0) 68%);
+      }
+
+      /* Prism rim: the app's pastel iridescence, travelling once around per loop. */
+      .rim {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #f6c9dd, #c6d6fb, #c4eedd, #fff1b8, #f6c9dd);
+        -webkit-mask-image: radial-gradient(circle closest-side, transparent 0%, transparent 89.5%, #000 92%, #000 100%);
+        mask-image: radial-gradient(circle closest-side, transparent 0%, transparent 89.5%, #000 92%, #000 100%);
+        opacity: 0.95;
+      }
+      .rim-edge {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        box-shadow:
+          inset 0 0 0 3px rgba(255, 255, 255, 0.95),
+          inset 0 0 0 44px rgba(255, 255, 255, 0),
+          inset 0 -10px 30px rgba(110, 120, 200, 0.22);
+      }
+      .rim-inner {
+        position: absolute;
+        inset: 8.4%;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 0 3px rgba(150, 160, 215, 0.22), inset 0 0 26px rgba(130, 140, 210, 0.16);
+      }
+
+      /* The emblem is drawn in its own 362x512 space and scaled into the disc. */
+      #stage {
+        position: absolute;
+        inset: 0;
+      }
+      #emblem {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 362px;
+        height: 512px;
+        transform-style: preserve-3d;
+      }
+      .layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 362px;
+        height: 512px;
+        display: block;
+      }
+      #shadow {
+        filter: brightness(0) blur(7px);
+        opacity: 0.2;
+      }
+      .sheen,
+      .ring-sheen {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 362px;
+        height: 512px;
+        -webkit-mask-size: 100% 100%;
+        mask-size: 100% 100%;
+        pointer-events: none;
+      }
+      .sheen {
+        -webkit-mask-image: url("assets/logo.png");
+        mask-image: url("assets/logo.png");
+        --p: -30%;
+        background: linear-gradient(
+          108deg,
+          rgba(255, 255, 255, 0) calc(var(--p) - 10%),
+          rgba(255, 255, 255, 0.6) var(--p),
+          rgba(255, 255, 255, 0) calc(var(--p) + 10%)
+        );
+      }
+      .ring-sheen {
+        -webkit-mask-image: url("assets/layers/wheel.png");
+        mask-image: url("assets/layers/wheel.png");
+        --ang: 0deg;
+        background: conic-gradient(from var(--ang) at 181px 350px, rgba(255, 255, 255, 0) 0deg, rgba(255, 255, 255, 0.6) 12deg, rgba(255, 255, 255, 0) 30deg, rgba(255, 255, 255, 0) 360deg);
+      }
+      .spark {
+        position: absolute;
+        width: 44px;
+        height: 44px;
+        margin: -22px 0 0 -22px;
+        opacity: 0;
+        filter: drop-shadow(0 0 5px rgba(255, 236, 120, 0.95));
+      }
+
+      /* Glass dome highlight over the whole disc. */
+      .gloss {
+        position: absolute;
+        left: 8%;
+        top: 3%;
+        width: 74%;
+        height: 44%;
+        border-radius: 50%;
+        background: radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.18) 46%, rgba(255, 255, 255, 0) 72%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="seal" data-start="0" data-duration="6" data-width="512" data-height="512">
+      <div id="seal" class="clip" data-start="0" data-duration="6" data-track-index="0">
+        <div class="burst b2" data-layout-allow-overflow></div>
+        <div class="burst" data-layout-allow-overflow></div>
+        <div class="bloom"></div>
+        <div class="rim" data-layout-allow-overflow></div>
+        <div class="rim-edge"></div>
+        <div class="rim-inner"></div>
+
+        <div id="stage">
+          <div id="emblem">
+            <img id="shadow" class="layer" src="assets/logo.png" alt="" />
+            <img class="layer ray" data-angle="-140.9" src="assets/layers/ray-00.png" alt="" />
+            <img class="layer ray" data-angle="-115.6" src="assets/layers/ray-01.png" alt="" />
+            <img class="layer ray" data-angle="-87.8" src="assets/layers/ray-02.png" alt="" />
+            <img class="layer ray" data-angle="-50.6" src="assets/layers/ray-03.png" alt="" />
+            <img class="layer ray" data-angle="-0.2" src="assets/layers/ray-04.png" alt="" />
+            <img class="layer ray" data-angle="47.5" src="assets/layers/ray-05.png" alt="" />
+            <img class="layer ray" data-angle="86.3" src="assets/layers/ray-06.png" alt="" />
+            <img class="layer ray" data-angle="115.6" src="assets/layers/ray-07.png" alt="" />
+            <img class="layer ray" data-angle="141.6" src="assets/layers/ray-08.png" alt="" />
+            <img id="wheel" class="layer" src="assets/layers/wheel.png" alt="" />
+            <img id="core" class="layer" src="assets/layers/core.png" alt="" />
+            <div id="ring-sheen" class="ring-sheen"></div>
+            <div id="sheen" class="sheen"></div>
+            <!-- Four-point sparkles, placed on bright gold (emblem coordinates). -->
+            <svg class="spark" data-x="150" data-y="72" viewBox="-1 -1 2 2"><path d="M0 -1 C.05 -.16 .16 -.05 1 0 C.16 .05 .05 .16 0 1 C-.05 .16 -.16 .05 -1 0 C-.16 -.05 -.05 -.16 0 -1Z" fill="#fff" /></svg>
+            <svg class="spark" data-x="211" data-y="73" viewBox="-1 -1 2 2"><path d="M0 -1 C.05 -.16 .16 -.05 1 0 C.16 .05 .05 .16 0 1 C-.05 .16 -.16 .05 -1 0 C-.16 -.05 -.05 -.16 0 -1Z" fill="#fff" /></svg>
+            <svg class="spark" data-x="104" data-y="196" viewBox="-1 -1 2 2"><path d="M0 -1 C.05 -.16 .16 -.05 1 0 C.16 .05 .05 .16 0 1 C-.05 .16 -.16 .05 -1 0 C-.16 -.05 -.05 -.16 0 -1Z" fill="#fff" /></svg>
+            <svg class="spark" data-x="256" data-y="190" viewBox="-1 -1 2 2"><path d="M0 -1 C.05 -.16 .16 -.05 1 0 C.16 .05 .05 .16 0 1 C-.05 .16 -.16 .05 -1 0 C-.16 -.05 -.05 -.16 0 -1Z" fill="#fff" /></svg>
+            <svg class="spark" data-x="142" data-y="408" viewBox="-1 -1 2 2"><path d="M0 -1 C.05 -.16 .16 -.05 1 0 C.16 .05 .05 .16 0 1 C-.05 .16 -.16 .05 -1 0 C-.16 -.05 -.05 -.16 0 -1Z" fill="#fff" /></svg>
+            <svg class="spark" data-x="223" data-y="410" viewBox="-1 -1 2 2"><path d="M0 -1 C.05 -.16 .16 -.05 1 0 C.16 .05 .05 .16 0 1 C-.05 .16 -.16 .05 -1 0 C-.16 -.05 -.05 -.16 0 -1Z" fill="#fff" /></svg>
+          </div>
+        </div>
+        <div class="gloss"></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const TAU = Math.PI * 2;
+        const $ = (s, r) => (r || document).querySelector(s);
+        const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+        const emblem = $("#emblem");
+        const rays = $$(".ray");
+        const sparks = $$(".spark");
+
+        // Emblem space -> disc: centre the artwork's bounding box (55..309, 52..456) and scale it in.
+        const SCALE = 0.92;
+        const CX = 182, CY = 254;
+        gsap.set(emblem, { transformOrigin: CX + "px " + CY + "px", transformPerspective: 1100, x: 256 - CX, y: 256 - CY + 6, scale: SCALE });
+
+        // Depth: the rays sit furthest back, the blue crown in front, so tilting makes them slide against each other.
+        gsap.set($("#shadow"), { z: -46, x: 4, y: 12 });
+        gsap.set(rays, { z: -30, transformOrigin: "181px 100px" });
+        gsap.set($("#wheel"), { z: -12 });
+        gsap.set($("#core"), { z: 14 });
+        gsap.set($("#ring-sheen"), { z: -10 });
+        gsap.set($("#sheen"), { z: 18 });
+        sparks.forEach((s) => gsap.set(s, { x: +s.dataset.x, y: +s.dataset.y, z: 26, scale: 0, xPercent: 0, rotation: 0 }));
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Ambient turning. Each moves a whole number of its own period per loop, so frame 180 equals frame 0.
+        tl.fromTo(".rim", { rotation: 0 }, { rotation: 360, duration: 6, ease: "none" }, 0);
+        tl.fromTo(".burst:not(.b2)", { rotation: 0 }, { rotation: 15, duration: 6, ease: "none" }, 0);   // 15deg = one spoke
+        tl.fromTo(".burst.b2", { rotation: 0 }, { rotation: -10, duration: 6, ease: "none" }, 0);        // 10deg = one spoke
+        tl.fromTo(".bloom", { scale: 1, opacity: 0.85 }, { scale: 1.07, opacity: 1, duration: 3, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+
+        // Float and tilt: continuous, driven by the loop phase (whole cycles).
+        const clock = { p: 0 };
+        function pose(p) {
+          const a = p * TAU;
+          gsap.set(emblem, {
+            rotationY: 7 * Math.sin(a),
+            rotationX: -4 * Math.sin(a + 1.3),
+            y: 256 - CY + 6 + 4 * Math.sin(2 * a + 0.4),
+            scale: SCALE * (1 + 0.006 * Math.sin(2 * a)),
+          });
+          gsap.set(".gloss", { x: 7 * Math.sin(a + 0.6), y: 3 * Math.cos(a) });
+        }
+        tl.fromTo(clock, { p: 0 }, { p: 1, duration: 6, ease: "none", immediateRender: false, onUpdate: () => pose(clock.p) }, 0);
+        pose(0);
+
+        // Sunrise wave: the rays brighten and lengthen outward from the top centre, twice per loop.
+        rays.forEach((ray) => {
+          const order = Math.abs(+ray.dataset.angle) / 141.6;        // 0 at the top, 1 at the widest ray
+          [0, 3].forEach((offset) => {
+            const t = 0.35 + offset + order * 1.1;
+            tl.fromTo(ray,
+              { filter: "brightness(1) saturate(1) drop-shadow(0 0 0px rgba(255,236,100,0))", scale: 1 },
+              { filter: "brightness(1.28) saturate(1.2) drop-shadow(0 0 9px rgba(255,236,100,0.95))", scale: 1.035, duration: 0.55, ease: "sine.out", immediateRender: false }, t);
+            tl.to(ray,
+              { filter: "brightness(1) saturate(1) drop-shadow(0 0 0px rgba(255,236,100,0))", scale: 1, duration: 0.9, ease: "sine.inOut" }, t + 0.55);
+          });
+        });
+
+        // A sheen crosses the emblem (masked to its exact shape); a highlight runs round the wheel.
+        tl.fromTo("#sheen", { "--p": "-30%" }, { "--p": "130%", duration: 1.5, ease: "power2.inOut", immediateRender: false }, 1.6);
+        tl.fromTo("#sheen", { "--p": "-30%" }, { "--p": "130%", duration: 1.5, ease: "power2.inOut", immediateRender: false }, 4.6);
+        tl.fromTo("#ring-sheen", { "--ang": "0deg" }, { "--ang": "360deg", duration: 6, ease: "none", immediateRender: false }, 0);
+
+        // Sparkles twinkle in turn.
+        sparks.forEach((s, i) => {
+          const t = 0.6 + i * 0.9;
+          tl.fromTo(s, { scale: 0, rotation: -25, opacity: 0 }, { scale: 0.9, rotation: 20, opacity: 1, duration: 0.32, ease: "back.out(2.2)", immediateRender: false }, t);
+          tl.to(s, { scale: 0, rotation: 70, opacity: 0, duration: 0.46, ease: "power2.in" }, t + 0.32);
+        });
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["seal"] = tl;
+        // Dev only: index.html?t=1.5 shows that moment (events must fire for the pose to update).
+        const q = new URLSearchParams(location.search);
+        if (q.has("t")) tl.time(parseFloat(q.get("t")), false);
+      })();
+    </script>
+  </body>
+</html>

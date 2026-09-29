@@ -148,6 +148,8 @@ export interface Settings {
   faceId: boolean;
   notify: Record<AlertKind, boolean>;
   demo: DemoSettings;
+  /** The welcome intro has played (or been skipped); a demo reset clears it. */
+  introSeen: boolean;
 }
 
 export type FeatureKey = 'attendance' | 'wallet' | 'behavior' | 'leave' | 'assessments' | 'announcements';
