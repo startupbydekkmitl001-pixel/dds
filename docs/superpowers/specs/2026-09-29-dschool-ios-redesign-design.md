@@ -53,17 +53,20 @@ Build a working iOS prototype of a redesigned Dschool **student** app that the s
 | `(auth)/forgot-pin` | sheet | PIN reset steps + device ID |
 | `notifications` | push | Alerts inbox |
 | `qr` | full-screen modal | Pay QR + scanner |
-| `topup/*` | modal stack | 3-step top-up |
-| `wallet/history` | push | Full transaction history with filters |
-| `wallet/verify` | push | Slip check list (legacy "ตรวจสอบการเติมเงิน") |
+| `topup` | modal (one route with internal animated steps) | 3-step top-up |
+| `wallet-history` | push | Full transaction history with filters |
+| `slip-check` | push | Slip check list (legacy "ตรวจสอบการเติมเงิน") |
 | `leave/new` | modal | Leave request form |
 | `leave/[id]` | push | Leave status timeline |
-| `attendance/[date]` | sheet | Day detail |
+| `day/[date]` | sheet | Day detail |
 | `behavior` | push | Score gauge, history, tips |
 | `assessments/index` | push | SDQ / EQ list with status |
 | `assessments/[id]` | modal | One-question-per-screen flow + result |
 | `profile` | push | Student info, guardian, advisor |
-| `settings` | push | Theme, PIN, Face ID, notifications, demo controls, logout |
+| `settings/index` | push | Theme, PIN, Face ID, notifications, demo controls, logout |
+| `settings/change-pin` | push | Current → new → confirm PIN |
+| `announcement/[id]` | sheet | Announcement detail |
+| `dev/kit` | push (demo section only) | Component gallery for visual QA |
 
 ### Coverage of current-app functions
 
@@ -75,9 +78,9 @@ Build a working iOS prototype of a redesigned Dschool **student** app that the s
 | รายงานขาด ลา มาสาย + semester picker | `attendance` tab |
 | ลงเวลาโรงเรียน / ประวัติการส่งใบลา | `attendance` tab leave section, `leave/*` |
 | รายงานพฤติกรรม (score 100) | `behavior` |
-| ศูนย์อาหาร: ล่าสุด, ประวัติเติมเงิน, ประวัติใช้จ่าย | `wallet` tab + `wallet/history` |
+| ศูนย์อาหาร: ล่าสุด, ประวัติเติมเงิน, ประวัติใช้จ่าย | `wallet` tab + `wallet-history` |
 | เติมเงิน (transfer + upload slip) | `topup/*` |
-| ตรวจสอบการเติมเงิน | `wallet/verify` |
+| ตรวจสอบการเติมเงิน | `slip-check` |
 | อายัดบัตร | Freeze action on `wallet` |
 | QR Code จ่ายเงิน, header QR scanner | `qr` |
 | ประชาสัมพันธ์ | Home announcements + `notifications` |
@@ -124,7 +127,7 @@ Direction **A · Daylight editorial**: Superhuman's parchment canvas and restrai
 
 | Feature | Fill | Ink on fill |
 |---|---|---|
-| Attendance | `#847dff` Iris | `#ffffff` |
+| Attendance | `#847dff` Iris | `#16123f` (white is only 3.3:1 on Iris, below the 4.5:1 minimum) |
 | Wallet | `#dd90d8` Orchid | `#3a1238` |
 | Behavior | `#90b8f0` Periwinkle | `#0c2a52` |
 | Leave | `#d1c9ff` Pale Iris | `#2a2270` |
@@ -222,7 +225,7 @@ Every screen that loads data shows a skeleton while loading, a `ErrorState` with
 ### 5.2 Home
 
 - **Header:** mono date "อ. 29 ก.ย. 2569", Trirong greeting "สวัสดีตอนเช้า / *ภูมิ*" (time-of-day aware), and a bell with an unread count badge.
-- **Today card:** a status pill and time, e.g. "ถึงโรงเรียน 07:32 · ตรงเวลา" in green. Before arrival it reads "ยังไม่ลงเวลา · ประตูปิด 08:00", and on a leave day it reads "วันนี้ลาป่วย".
+- **Today card:** a status pill and time, e.g. "ถึงโรงเรียน 07:32 · ตรงเวลา" in green. Before arrival it reads "ยังไม่ลงเวลา · ประตูปิด 08:00", and on a leave day it reads "วันนี้ลาป่วย". On weekends, holidays or between semesters it reads "วันนี้ไม่มีเรียน". An approved leave covering today always wins over the demo arrival setting.
 - **Balance card:** PrismShimmer, a mono `NumberTicker` balance, "ใช้ไปวันนี้ ฿45", and two buttons: เติมเงิน (primary) and จ่าย QR (secondary).
 - **2×2 feature tiles:** Attendance (streak "ตรงเวลา 12 วัน"), Behavior (score 100), Leave (pending count or "ยื่นใบลา"), and Assessments (count due). Tiles use `StaggerIn`.
 - **Week strip:** Mon–Fri status dots.
@@ -235,7 +238,7 @@ Every screen that loads data shows a skeleton while loading, a `ErrorState` with
 - Balance card: the same component as Home, in a larger variant.
 - Action row: เติมเงิน, จ่าย QR, อายัดบัตร, ตรวจสอบสลิป.
 - A 7-day spending bar chart (react-native-svg, Orchid bars, today highlighted).
-- Combined history grouped by day. Top-ups show `+฿50` in green with a Slip badge, and purchases show `−฿35` with the shop name. "ดูทั้งหมด" opens `wallet/history`, which has All / Top-ups / Spending filters.
+- Combined history grouped by day. Top-ups show `+฿50` in green with a Slip badge, and purchases show `−฿35` with the shop name. "ดูทั้งหมด" opens `wallet-history`, which has All / Top-ups / Spending filters.
 
 **Freeze card**
 - A confirmation sheet explains the effect before freezing.
@@ -246,12 +249,12 @@ Every screen that loads data shows a skeleton while loading, a `ErrorState` with
 2. **Transfer:** the account card (bank, mono account number, name) with a copy button and the toast "คัดลอกเลขบัญชีแล้ว".
    - Notes: TrueMoney and ShopeePay aren't supported yet, and students shouldn't transfer through PromptPay using the account number.
    - Button: "โอนแล้ว · อัปโหลดสลิป".
-3. **Slip:** pick an image (expo-image-picker; web uses a file input). A scan line sweeps the slip thumbnail for 2.4s, then one of:
+3. **Slip:** pick an image (expo-image-picker; web uses a file input), or tap the subtle "ใช้สลิปตัวอย่าง (เดโม)" link, which uses a drawn sample slip (`demo://slip`) so the pitch never depends on having a real slip photo. A scan line sweeps the slip thumbnail for 2.4s, then one of:
    - **Verified:** a check with `BorderTrace`, "เติมเงินสำเร็จ", the new balance counting up, a Success haptic, and the button "กลับไปที่กระเป๋า".
    - **Pending:** "กำลังตรวจสอบสลิป เราจะแจ้งเตือนเมื่อเสร็จ" with a "ปิด" button. A background timer verifies the slip after 20s, credits the balance and pushes an alert.
    - **Rejected** (demo toggle): "ตรวจสอบสลิปไม่ผ่าน" with a reason and a "ลองอีกครั้ง" button.
 
-**Slip check** (`wallet/verify`): a list of recent bank-side transfers (date-time, amount), each with an "ตรวจสอบ" button. The button runs the same verify step and marks the item "เติมแล้ว".
+**Slip check** (`slip-check`): a list of recent bank-side transfers (date-time, amount), each with an "ตรวจสอบ" button. The button runs the same verify step and marks the item "เติมแล้ว".
 
 ### 5.4 QR pay and scan
 
@@ -269,7 +272,7 @@ Every screen that loads data shows a skeleton while loading, a `ErrorState` with
 - **Ring:** the present percentage in the center (mono `NumberTicker`), made of segments per status.
 - **6 status rows:** colored dot, Thai label, mono count "42 วัน", and a thin proportional bar.
 - **Streak chip:** "มาตรงเวลาติดต่อกัน 12 วัน".
-- **Month calendar:** swipe or tap arrows to change month (limited to the semester's months). Days show status dots, and weekends and holidays are muted. Tapping a day opens the `attendance/[date]` sheet: status, check-in time, gate, and any leave note.
+- **Month calendar:** swipe or tap arrows to change month (limited to the semester's months). Days show status dots, and weekends and holidays are muted. Tapping a day opens the `day/[date]` sheet: status, check-in time, gate, and any leave note.
 - **Leave section:**
   - "ยื่นใบลา" primary button.
   - A list of requests with status badges: รออนุมัติ in amber, อนุมัติแล้ว in green, ไม่อนุมัติ in red.
@@ -281,7 +284,7 @@ Every screen that loads data shows a skeleton while loading, a `ErrorState` with
   - Inline validation messages. Submitting shows a success check, then routes to `leave/[id]`.
 - **`leave/[id]`:**
   - A vertical timeline: ส่งแล้ว → ครูที่ปรึกษาอนุมัติ → บันทึกในระบบ. Each step shows a time when done and animates when it advances.
-  - Background simulation: approval after 30s (5s with "เร่งการอนุมัติ" on), recorded 10s later, with an alert at each step.
+  - Background simulation: approval after 30s (5s with "เร่งการอนุมัติ" on), recorded 10s later (3s when sped up), with an alert at each step. Due times are stored, so progress resumes after an app restart.
   - An approved leave marks those dates sick/personal in the calendar.
 
 ### 5.6 Me
@@ -389,6 +392,7 @@ src/data/                seed.ts (fixtures incl. demo PIN), api.ts (fake async A
 - **Static:** `tsc --noEmit` in strict mode.
 - **Visual:** `expo start --web`, then every route checked in the browser pane at 390×844, light and dark, with screenshots reviewed.
 - **Device:** the user runs `npx expo start` (or `--tunnel`) and opens the app in Expo Go to check Face ID, camera, brightness, haptics and tilt.
+- **Face ID caveat:** Expo Go may not show the real Face ID prompt on iOS (it can fall back to the device passcode). A development build (`eas build --profile development`) shows the true Face ID prompt. The README documents this.
 
 ## 8. Build order
 
