@@ -2,12 +2,11 @@ import { Receipt } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { StaggerIn } from '@/components/motion';
-import { EmptyState, LoadGate, Screen, ScreenHeader, Skeleton, Text, toast } from '@/components/ui';
+import { EmptyState, LoadGate, Screen, ScreenHeader, Skeleton, Text } from '@/components/ui';
 import { useApp } from '@/data/store';
 import { useResource } from '@/data/useResource';
 import { TransferCard } from '@/features/wallet/TransferCard';
 import { now } from '@/lib/clock';
-import { formatBaht } from '@/lib/format';
 import { haptic } from '@/lib/haptics';
 
 const CHECK_MS = 1200;
@@ -19,16 +18,14 @@ export default function SlipCheck() {
   const claimTransfer = useApp((s) => s.claimTransfer);
   const [checking, setChecking] = useState<string | null>(null);
 
-  const check = (id: string, amount: number) => {
+  const check = (id: string) => {
     if (checking) return;
     setChecking(id);
     setTimeout(() => {
       const ok = claimTransfer(id, now().getTime());
       setChecking(null);
-      if (ok) {
-        haptic.success();
-        toast(`เติมเงิน ${formatBaht(amount)} แล้ว`, { kind: 'success' });
-      }
+      // The top-up alert raised by the store announces the credit as a toast (AlertToaster).
+      if (ok) haptic.success();
     }, CHECK_MS);
   };
 
@@ -65,7 +62,7 @@ export default function SlipCheck() {
           <View style={styles.stack}>
             {transfers.map((t, i) => (
               <StaggerIn key={t.id} index={i}>
-                <TransferCard transfer={t} checking={checking === t.id} onCheck={() => check(t.id, t.amount)} />
+                <TransferCard transfer={t} checking={checking === t.id} onCheck={() => check(t.id)} />
               </StaggerIn>
             ))}
           </View>

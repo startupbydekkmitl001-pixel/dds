@@ -1,9 +1,10 @@
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { RefreshControl, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { screenPad, withAlpha } from '@/theme/tokens';
@@ -42,6 +43,14 @@ export function Screen({
     scrollY.value = e.contentOffset.y;
   });
   const barStyle = useAnimatedStyle(() => ({ opacity: interpolate(scrollY.value, [36, 72], [0, 1], 'clamp') }));
+  // The compact bar only takes touches once it's visible; while hidden it must not cover the header's buttons.
+  const [barActive, setBarActive] = useState(false);
+  useAnimatedReaction(
+    () => scrollY.value > 54,
+    (active, previous) => {
+      if (active !== previous) scheduleOnRN(setBarActive, active);
+    },
+  );
 
   const inner: StyleProp<ViewStyle> = [
     { paddingTop: insets.top + 8, paddingHorizontal: padded ? screenPad : 0, paddingBottom: 120 + insets.bottom },
@@ -72,10 +81,10 @@ export function Screen({
         </View>
       )}
       {title ? (
-        <Animated.View pointerEvents="box-none" style={[styles.bar, { height: insets.top + 52 }, barStyle]}>
-          <BlurView intensity={40} tint={scheme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(c.canvas, 0.72), borderBottomWidth: 1, borderBottomColor: c.hairline }]} />
-          <View style={[styles.barRow, { paddingTop: insets.top }]} pointerEvents="box-none">
+        <Animated.View pointerEvents={barActive ? 'box-none' : 'none'} style={[styles.bar, { height: insets.top + 52 }, barStyle]}>
+          <BlurView intensity={40} tint={scheme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" />
+          <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(c.canvas, 0.72), borderBottomWidth: 1, borderBottomColor: c.hairline }]} />
+          <View style={[styles.barRow, { paddingTop: insets.top }]} pointerEvents={barActive ? 'box-none' : 'none'}>
             <View style={styles.barSide}>
               {back ? <IconButton icon={ChevronLeft} label="ย้อนกลับ" tone="plain" onPress={() => router.back()} /> : null}
             </View>

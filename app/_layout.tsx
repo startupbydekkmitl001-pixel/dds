@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastHost } from '@/components/ui';
+import { AlertToaster } from '@/features/notifications/AlertToaster';
 import { startSimulations } from '@/data/simulations';
 import { appStore, useApp } from '@/data/store';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
@@ -49,9 +50,15 @@ function RootStack() {
           <Stack.Screen name="behavior" />
           <Stack.Screen name="assessments/index" />
           <Stack.Screen name="assessments/[id]" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="notifications" />
+          <Stack.Screen
+            name="announcement/[id]"
+            options={{ presentation: 'formSheet', sheetAllowedDetents: [0.6, 1], sheetGrabberVisible: true, sheetCornerRadius: 28 }}
+          />
           <Stack.Screen name="dev/kit" />
         </Stack.Protected>
       </Stack>
+      <AlertToaster />
       <ToastHost />
     </>
   );
