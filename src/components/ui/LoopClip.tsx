@@ -6,9 +6,10 @@ import { useReducedMotion } from 'react-native-reanimated';
 
 /**
  * A short muted loop over its own poster, filling whatever box it sits in. The poster is the
- * clip's first frame, so the hand-over is invisible. It plays only while its screen is
- * focused, the app is active and `active` is true (a card's hidden face passes false), and
- * with Reduce Motion it stays a still and never decodes the video.
+ * clip's first frame, so the hand-over is invisible. The video exists only while `active` is
+ * true: a card's hidden face passes false and keeps just the still, so no native video surface
+ * sits behind the face you're looking at. It plays only while its screen is focused and the app
+ * is active, and with Reduce Motion it stays a still and never decodes the video.
  * Tests find the poster at `${testID}-poster`.
  */
 export function LoopClip({ video, poster, testID, active = true }: { video: number; poster: number; testID: string; active?: boolean }) {
@@ -16,14 +17,13 @@ export function LoopClip({ video, poster, testID, active = true }: { video: numb
   return (
     <>
       <Image testID={`${testID}-poster`} source={poster} resizeMode="cover" style={styles.fill} />
-      {reduced ? null : <Clip video={video} active={active} />}
+      {reduced || !active ? null : <Clip video={video} />}
     </>
   );
 }
 
-function Clip({ video, active }: { video: number; active: boolean }) {
+function Clip({ video }: { video: number }) {
   const focused = useIsFocused();
-  const playing = focused && active;
   // Hidden until the first frame is on screen, so a slow decoder never flashes black over the poster.
   const [ready, setReady] = useState(false);
   const player = useVideoPlayer(video, (p) => {
@@ -34,7 +34,7 @@ function Clip({ video, active }: { video: number; active: boolean }) {
   // Play from an effect, after VideoView has mounted its surface (on web an earlier play() is
   // dropped). The OS pauses video in the background, so resume when the app comes back.
   useEffect(() => {
-    if (!playing) {
+    if (!focused) {
       player.pause();
       return;
     }
@@ -43,7 +43,7 @@ function Clip({ video, active }: { video: number; active: boolean }) {
       if (state === 'active') player.play();
     });
     return () => sub.remove();
-  }, [player, playing]);
+  }, [player, focused]);
 
   return (
     <VideoView

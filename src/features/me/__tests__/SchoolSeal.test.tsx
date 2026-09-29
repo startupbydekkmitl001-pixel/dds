@@ -60,9 +60,10 @@ describe('SchoolSeal', () => {
     expect(mockPlayer.play).not.toHaveBeenCalled();
   });
 
-  test('can be held still while its card face is hidden', async () => {
+  test('is just the still, with no video behind it, while its card face is hidden', async () => {
     await renderWithTheme(<SchoolSeal size={44} active={false} />);
+    expect(id('school-seal-poster')).toBeTruthy();
+    expect(id('school-seal-video')).toBeNull();
     expect(mockPlayer.play).not.toHaveBeenCalled();
-    expect(mockPlayer.pause).toHaveBeenCalled();
   });
 });

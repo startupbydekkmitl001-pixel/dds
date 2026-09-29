@@ -8,5 +8,3 @@ function base36(rand: () => number, length: number): string {
 export function newId(prefix: string, rand: () => number = Math.random): string {
   return `${prefix}_${base36(rand, 8)}`;
 }
-
-export { base36 };

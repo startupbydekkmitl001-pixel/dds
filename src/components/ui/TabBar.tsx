@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, type Tabs } from 'expo-router';
-import { CalendarCheck, House, QrCode, UserRound, Wallet } from 'lucide-react-native';
+import { CalendarCheck, House, ScanQrCode, UserRound, Wallet } from 'lucide-react-native';
 import { useEffect, useState, type ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -28,7 +28,7 @@ const INSET = 6;
 
 /**
  * Floating frosted capsule. A lens of brighter glass glides under the active
- * tab; the glossy ink QR button sits at the centre.
+ * tab; the glossy ink QR-scan button sits at the centre.
  */
 export function TabBar({ state, navigation }: TabBarProps) {
   const { c, scheme, elevation } = useTheme();
@@ -68,11 +68,11 @@ export function TabBar({ state, navigation }: TabBarProps) {
           />
         ) : null}
         {state.routes.map((route, i) => {
-          if (route.name === 'pay') {
+          if (route.name === 'scan') {
             return (
               <View key={route.key} style={styles.item}>
                 <PressableScale
-                  accessibilityLabel="จ่ายเงินด้วย QR"
+                  accessibilityLabel="สแกน QR"
                   haptic="light"
                   scaleTo={0.92}
                   onPress={() => router.push('/qr')}
@@ -81,7 +81,7 @@ export function TabBar({ state, navigation }: TabBarProps) {
                   <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.qrGloss]}>
                     <LinearGradient colors={[withAlpha(white, 0.28), withAlpha(white, 0)]} locations={[0, 0.6]} style={StyleSheet.absoluteFill} />
                   </View>
-                  <Icon icon={QrCode} color={c.onPrimary} size={24} />
+                  <Icon icon={ScanQrCode} color={c.onPrimary} size={24} />
                 </PressableScale>
               </View>
             );

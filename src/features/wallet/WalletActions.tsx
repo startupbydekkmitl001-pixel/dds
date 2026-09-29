@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Plus, QrCode, Receipt, Snowflake, Sun } from 'lucide-react-native';
+import { Plus, Receipt, ScanQrCode, Snowflake, Sun } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PressableScale } from '@/components/motion';
@@ -42,7 +42,7 @@ export function WalletActions() {
     <>
       <View style={styles.row}>
         <Action icon={Plus} label="เติมเงิน" onPress={() => router.push('/topup')} />
-        <Action icon={QrCode} label="จ่าย QR" onPress={() => router.push('/qr')} />
+        <Action icon={ScanQrCode} label="สแกน QR" onPress={() => router.push('/qr')} />
         <Action
           icon={frozen ? Sun : Snowflake}
           label={frozen ? 'ยกเลิกอายัด' : 'อายัดบัตร'}

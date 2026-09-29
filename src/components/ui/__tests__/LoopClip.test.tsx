@@ -56,27 +56,30 @@ describe('LoopClip', () => {
     expect(mockPlayer.loop).toBe(true);
   });
 
-  test('while inactive it neither plays nor resumes on foreground, and it pauses', async () => {
+  test('while inactive only the poster is shown: no video, nothing to play or resume', async () => {
     await renderWithTheme(<LoopClip video={1} poster={2} testID="seal" active={false} />);
+    expect(id('seal-poster')).toBeTruthy();
+    expect(id('clip-video')).toBeNull();
     expect(mockPlayer.play).not.toHaveBeenCalled();
-    expect(mockPlayer.pause).toHaveBeenCalled();
     await act(async () => appStateHandlers.forEach((h) => h('active')));
     expect(mockPlayer.play).not.toHaveBeenCalled();
   });
 
-  test('plays when it becomes active and pauses again when it stops being active', async () => {
+  test('the video arrives and plays when it becomes active, and goes when it stops being active', async () => {
     const view = await renderWithTheme(<LoopClip video={1} poster={2} testID="seal" active={false} />);
     await view.rerender(<LoopClip video={1} poster={2} testID="seal" active />);
+    expect(id('clip-video')).toBeTruthy();
     expect(mockPlayer.play).toHaveBeenCalled();
-    mockPlayer.pause.mockClear();
     await view.rerender(<LoopClip video={1} poster={2} testID="seal" active={false} />);
-    expect(mockPlayer.pause).toHaveBeenCalled();
+    expect(id('clip-video')).toBeNull();
+    expect(id('seal-poster')).toBeTruthy();
   });
 
   test('an unfocused screen keeps it paused even when it is active', async () => {
     mockFocused = false;
     await renderWithTheme(<LoopClip video={1} poster={2} testID="seal" active />);
     expect(mockPlayer.play).not.toHaveBeenCalled();
+    expect(mockPlayer.pause).toHaveBeenCalled();
   });
 
   test('with Reduce Motion only the poster is shown', async () => {

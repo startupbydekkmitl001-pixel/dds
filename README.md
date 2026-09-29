@@ -1,6 +1,6 @@
 # Dschool AI
 
-A Thai student-app pitch prototype built with Expo SDK 57, React Native, TypeScript, and Expo Router. It demonstrates attendance, leave requests, a school wallet, QR payment, assessments, notifications, and settings using sample data stored locally on the device.
+A Thai student-app pitch prototype built with Expo SDK 57, React Native, TypeScript, and Expo Router. It demonstrates attendance, leave requests, a school wallet, QR scanning, assessments, notifications, and settings using sample data stored locally on the device.
 
 Student details, bank details, wallet balances, purchases, slip checks, approvals, and assessment results are fictional. There is no live school backend, real payment processing, or push-notification service. Use the sample slip; no bank transfer is needed.
 
@@ -32,15 +32,15 @@ npx expo lint
 npx expo export --platform web --output-dir .export-check
 ```
 
-The web preview supports the app flows with fallbacks for device-only features. Check camera scanning, haptics, QR-screen brightness, and card motion on a physical device. The export command checks the production web bundle; it does not replace a visual walkthrough.
+The web preview supports the app flows with fallbacks for device-only features. Check camera scanning, haptics, and card motion on a physical device. The export command checks the production web bundle; it does not replace a visual walkthrough.
 
 ## Demo walkthrough
 
 - **Home:** review today's arrival, balance, attendance streak, behavior, assessments, and school announcements.
 - **Wallet:** choose **เติมเงิน**, enter an amount from 10 to 2,000 baht, continue through the sample transfer details, then select **ใช้สลิปตัวอย่าง (เดโม)**. Review the result and transaction history.
-- **QR payment:** open **จ่าย QR** and hold the payment QR for about a second to simulate a 35-baht purchase. Freezing the card prevents purchases; unfreeze it from Wallet or the QR screen.
+- **QR scanning:** tap the QR button in the centre of the tab bar, or **สแกน QR** on Home or Wallet, to scan a QR code with the camera. Freeze or unfreeze the card from Wallet.
 - **Attendance and leave:** inspect a day, submit a leave request with school days and a reason, and watch its simulated approval timeline. Pending top-ups and leave requests continue progressing while the app runs and overdue work is processed after reopening.
-- **Me:** tilt or flip the pastel holographic Rajadamri student pass to reveal the student-ID QR. The anonymous illustrated avatar uses no real student photo. Tap **จ่าย QR**, **ทางลัด**, or **ข้อมูลฉัน** below the card to expand payment, attendance/leave, or profile actions. Inspect behavior, complete an assessment, and open **ตั้งค่า**.
+- **Me:** tilt or flip the pastel holographic Rajadamri student pass to reveal the student-ID QR. The anonymous illustrated avatar uses no real student photo. Open **ข้อมูลส่วนตัว** for profile details. Inspect behavior, complete an assessment, and open **ตั้งค่า**.
 - **Settings:** choose **ตามระบบ**, **สว่าง**, or **มืด** from live previews, or use the sun/moon button on Home; turn Face ID sign-in on or off; configure in-app alert categories; or log out. **ตามระบบ** follows the device appearance.
 
 App data persists locally. A changed PIN replaces `123456` until it is changed again or reset from the demo controls. Five incorrect login attempts trigger a 30-second lockout.

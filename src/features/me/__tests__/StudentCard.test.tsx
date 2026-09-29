@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react-native';
+import { act, fireEvent, screen, within } from '@testing-library/react-native';
 import { appStore } from '@/data/store';
 import { SCHOOL_NAME } from '@/data/seed';
 import { StudentCard } from '@/features/me/StudentCard';
@@ -12,7 +12,7 @@ jest.mock('expo-router', () => ({ useIsFocused: () => true }));
 jest.mock('@/lib/haptics', () => ({ haptic: { light: jest.fn(), selection: jest.fn() } }));
 
 type Player = { muted: boolean; loop: boolean; play: jest.Mock; pause: jest.Mock };
-// One player per clip, in render order: the front face's seal first, then the back face's.
+// One player per mounted clip, in mount order. Only the face that's showing mounts one.
 const players: Player[] = [];
 jest.mock('expo-video', () => {
   const React = require('react');
@@ -36,7 +36,18 @@ beforeEach(() => {
   appStore.getState().resetDemo(new Date(2026, 8, 29, 9).getTime());
 });
 
+afterEach(() => jest.useRealTimers());
+
 const seals = () => screen.queryAllByTestId('school-seal', { includeHiddenElements: true });
+const face = (testID: string) => screen.getByTestId(testID, { includeHiddenElements: true });
+const clipOn = (testID: string) => within(face(testID)).queryByTestId('seal-clip', { includeHiddenElements: true });
+
+async function flipAndSettle() {
+  await fireEvent.press(screen.getByRole('button'));
+  await act(async () => {
+    jest.advanceTimersByTime(1000);
+  });
+}
 
 describe('StudentCard', () => {
   test('carries the school seal and name, and no longer the placeholder school', async () => {
@@ -54,16 +65,44 @@ describe('StudentCard', () => {
     expect(screen.getAllByText('ปีการศึกษา 2569').length).toBeGreaterThan(0);
   });
 
-  test('only the face you can see plays its seal, and flipping swaps them', async () => {
+  test('only the face you can see has a seal video, and it moves across as the card turns', async () => {
+    jest.useFakeTimers();
     await renderWithTheme(<StudentCard />);
-    const [front, back] = players;
-    expect(front.play).toHaveBeenCalled();
-    expect(back.play).not.toHaveBeenCalled();
+    expect(clipOn('card-front')).toBeTruthy();
+    expect(clipOn('card-back')).toBeNull();
+    expect(players).toHaveLength(1);
+    expect(players[0].play).toHaveBeenCalled();
 
-    front.pause.mockClear();
-    await fireEvent.press(screen.getByRole('button'));
-    expect(back.play).toHaveBeenCalled();
-    expect(front.pause).toHaveBeenCalled();
+    await flipAndSettle();
+    expect(clipOn('card-front')).toBeNull();
+    expect(clipOn('card-back')).toBeTruthy();
+    expect(players).toHaveLength(2);
+    expect(players[1].play).toHaveBeenCalled();
+
+    await flipAndSettle();
+    expect(clipOn('card-front')).toBeTruthy();
+    expect(clipOn('card-back')).toBeNull();
+  });
+
+  test('the face turned away is fully transparent, not just turned', async () => {
+    jest.useFakeTimers();
+    await renderWithTheme(<StudentCard />);
+    expect(face('card-front')).toHaveAnimatedStyle({ opacity: 1 });
+    expect(face('card-back')).toHaveAnimatedStyle({ opacity: 0 });
+
+    await flipAndSettle();
+    expect(face('card-front')).toHaveAnimatedStyle({ opacity: 0 });
+    expect(face('card-back')).toHaveAnimatedStyle({ opacity: 1 });
+  });
+
+  test('card text stays on one line and caps its growth with the system text size', async () => {
+    await renderWithTheme(<StudentCard />);
+    for (const text of ['ภูมิภัทร ศรีสุข', 'รหัส 24815']) {
+      const node = screen.getAllByText(text)[0];
+      expect(node.props.numberOfLines).toBe(1);
+      expect(node.props.adjustsFontSizeToFit).toBe(true);
+      expect(node.props.maxFontSizeMultiplier).toBeLessThanOrEqual(1.3);
+    }
   });
 
   test('the accessible label names the school', async () => {

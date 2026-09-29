@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Eye, Plus, QrCode, Snowflake } from 'lucide-react-native';
+import { Eye, Plus, ScanQrCode, Snowflake } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Aurora, FrostOverlay, PrismShimmer, RollingNumber } from '@/components/motion';
@@ -77,7 +77,7 @@ export function BalanceCard({
       {showActions ? (
         <View style={styles.actions}>
           <Button title="เติมเงิน" variant="primary" icon={Plus} onPress={() => router.push('/topup')} style={styles.flex} />
-          <Button title="จ่าย QR" icon={QrCode} onPress={() => router.push('/qr')} style={styles.flex} />
+          <Button title="สแกน QR" icon={ScanQrCode} onPress={() => router.push('/qr')} style={styles.flex} />
         </View>
       ) : null}
     </View>
