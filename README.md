@@ -45,11 +45,73 @@ The web preview supports the app flows with fallbacks for device-only features. 
 
 App data persists locally. A changed PIN replaces `123456` until it is changed again or reset from the demo controls. Five incorrect login attempts trigger a 30-second lockout.
 
+## Welcome intro
+
+After the first unlock, a 14.5-second welcome film plays full screen. The wordmark appears, then four frosted cards show attendance, the wallet, QR payment, and leave, and the tray unfolds into the Home grid under **ทุกเรื่องในโรงเรียน ในแอปเดียว**. Tap **ข้าม** to skip it at any point. When it ends, choose **เริ่มต้นใช้งาน** to continue or **ดูอีกครั้ง** to replay it. It plays once; replay it from **ตั้งค่า → เกี่ยวกับ → แนะนำแอป**. Resetting the demo shows it again after the next unlock.
+
+The film is silent and matches the current light or dark appearance. With Reduce Motion on, it does not autoplay: the final frame appears with **เล่นวิดีโอ**. Playback uses `expo-video`, which Expo Go includes; rebuild any development build created before this dependency was added.
+
+The film is authored in [HyperFrames](https://github.com/heygen-com/hyperframes) as HTML and GSAP in `motion/intro/`, using the app's own tokens, fonts, and motion curves (`frame.md`). To change it, edit `motion/intro/index.html`, then check, render both themes, and re-encode the app copies:
+
+```sh
+cd motion/intro
+npx hyperframes check
+npx hyperframes render --quality delivery --output renders/intro-light.mp4
+npx hyperframes render --quality delivery --variables '{"theme":"dark"}' --output renders/intro-dark.mp4
+cd ../..
+for t in light dark; do
+  ffmpeg -y -i motion/intro/renders/intro-$t.mp4 -c:v libx264 -preset veryslow -crf 25 -profile:v high -pix_fmt yuv420p -movflags +faststart -an assets/intro/intro-$t.mp4
+  ffmpeg -y -sseof -0.05 -i motion/intro/renders/intro-$t.mp4 -frames:v 1 -q:v 3 assets/intro/intro-$t-end.jpg
+done
+```
+
+Rendering needs Node.js 22 or newer and FFmpeg; `npx hyperframes doctor` diagnoses the setup. The full-quality renders stay in `motion/intro/renders/` (git-ignored); the app bundles the roughly 2 MB copies in `assets/intro/`.
+
+## Tile loops
+
+On Home, the four overview tiles (**เวลาเรียน**, **พฤติกรรม**, **ใบลา**, **แบบประเมิน**) each play their own seamless 6-second loop in the tile's art band, in the tile's pastel and in the current light or dark appearance:
+
+| Tile | Loop |
+| --- | --- |
+| เวลาเรียน | A glass sphere rocking in lavender ripples that pulse outward like a heartbeat. |
+| พฤติกรรม | Blue glass spheres and coins turning slowly in front of soft bokeh. |
+| ใบลา | Mint silk in slow folds, with a sheen that slides along them. |
+| แบบประเมิน | Three twisting silk ribbons, with one soft flare gliding along the front one. |
+
+The loops are muted and decorative, so screen readers skip them. Each starts from a still poster, and a loop plays only while Home is on screen and the app is active. With Reduce Motion on, tiles show the still poster and never decode the video. The wallet tile keeps its glossy sphere. Playback uses `expo-video`, which Expo Go includes.
+
+The loops are authored in [HyperFrames](https://github.com/heygen-com/hyperframes) in `motion/tiles/`: one WebGL2 fragment shader per tile in `shaders/`, selected by the `scene` and `theme` variables. Every motion repeats a whole number of times per loop, so the seam is exact. To change a look, edit its shader, then check, render all eight loops, and encode the app copies (Git Bash on Windows):
+
+```sh
+cd motion/tiles
+npx hyperframes check
+./render-all.sh        # 4 tiles x light/dark into renders/ (a few minutes)
+./encode-assets.sh     # compress into ../../assets/tiles/ with a first-frame poster for each
+```
+
+To iterate on a shader quickly, serve `motion/tiles/` with any static server and open `index.html?scene=leave&theme=dark&sheet=0,1.5,3,4.5`. The `sheet` parameter draws four moments in a grid; `t=2.5` draws a single frame. Rendering needs Node.js 22 or newer, FFmpeg, and a working GPU or software WebGL; `npx hyperframes doctor` diagnoses the setup. The full-quality renders stay in `motion/tiles/renders/` (git-ignored); the app bundles the roughly 2.3 MB of compressed copies in `assets/tiles/`.
+
+## School seal
+
+The student card carries the school's emblem as a round pearl seal: top-left on the front beside **โรงเรียนราชดำริ**, and above the return note on the QR side. The seal never quite stops moving, in a seamless 6-second loop: the sunburst rays brighten and lengthen outward from the finial, the emblem floats and tilts in 3D (the rays sit behind the blue crown, so they slide against it), a sheen crosses the crest, a highlight runs round the wheel, and sparkles twinkle on the gold. A prism rim turns around it.
+
+The seal is an opaque disc on purpose. The emblem keeps its official yellow and blue and reads the same on the light and the dark card; the blue would nearly disappear on the dark card without it. Only the face that is showing plays its seal, and it settles onto the card with a soft spring. With Reduce Motion on it is a still. The seal is decorative for screen readers, since the card's label already names the school.
+
+The sample school is **โรงเรียนราชดำริ** everywhere it appears (the student record and the top-up recipient). Saves from before the rename are updated on launch; a school someone set themselves is left alone.
+
+The seal is authored in [HyperFrames](https://github.com/heygen-com/hyperframes) in `motion/seal/`. `tools/split-logo.py` splits `assets/logo.png` into rays, wheel and blue core without touching a pixel of the artwork (it asserts the layers recombine to the original). To change the motion, edit `motion/seal/index.html`, then:
+
+```sh
+cd motion/seal
+npx hyperframes check
+./build-asset.sh       # render, compress to ../../assets/seal/seal.mp4, cut the first frame as seal.jpg
+```
+
 ## App identity and typography
 
 The app uses a frosted-pastel glass look: translucent cards over soft ambient light, in muted lavender, sky, mint, rose, and apricot, with one deep ink for primary actions. **Settings → การแสดงผล** switches between light, dark, and the device setting. Status text and distinct attendance symbols preserve meaning without color. Brand assets and generation notes are in [`assets/brand/`](assets/brand/README.md). Native icon and splash changes require a new app build; Expo Go does not verify the final launcher appearance.
 
-Thai headings and reading text use IBM Plex Sans Thai with room for stacked tone marks. IBM Plex Mono is reserved for numeric data and Latin labels. Reduced motion replaces the card flip and action-panel movement with opacity changes. New demo data uses Rajadamri as its school name; previously saved sample records are kept until a demo reset.
+Thai headings and reading text use IBM Plex Sans Thai with room for stacked tone marks. IBM Plex Mono is reserved for numeric data and Latin labels. Reduced motion replaces the card flip and action-panel movement with opacity changes. Demo data uses Rajadamri as its school name; a save that still carries the older placeholder school is updated on launch.
 
 ## Frosted pastel design system
 
@@ -149,9 +211,16 @@ src/data/                   Sample records, persisted store, simulated API/event
 src/lib/                    Pure domain logic, Thai formatting, platform helpers
 src/theme/                  Colors, typography, spacing, and motion tokens
 src/test/                   Shared test helpers; tests also live beside features
+assets/intro/               Rendered welcome film (light/dark) and end-frame stills
+assets/tiles/               Home tile loops (light/dark) with a first-frame poster each
+assets/seal/                The animated school seal loop and its first-frame poster
+motion/intro/               HyperFrames source for the welcome film
+motion/tiles/               HyperFrames source (WebGL shaders) for the Home tile loops
+motion/seal/                HyperFrames source for the school seal (the logo, split into layers)
 docs/superpowers/specs/     Product and design specification
 docs/superpowers/plans/     Implementation and verification plan
 ```
 
 All app copy is Thai. Dates use the Buddhist era through `src/lib/format.ts`; time reads go through `src/lib/clock.ts`. Routes stay in the root `app/` directory, and `@/` resolves to `src/`.
 "# d" 
+"# dds" 
