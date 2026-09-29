@@ -28,6 +28,10 @@ function RootStack() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.canvas } }}>
         <Stack.Protected guard={!unlocked}>
           <Stack.Screen name="pin" options={{ animation: 'fade' }} />
+          <Stack.Screen
+            name="forgot-pin"
+            options={{ presentation: 'formSheet', sheetAllowedDetents: [0.62, 1], sheetGrabberVisible: true, sheetCornerRadius: 28 }}
+          />
         </Stack.Protected>
         <Stack.Protected guard={unlocked}>
           <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
