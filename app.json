@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "Dschool",
+    "slug": "dschool",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "dschool",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f2f0eb",
+      "dark": {
+        "image": "./assets/splash-icon.png",
+        "backgroundColor": "#0f1011"
+      }
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.example.dschool"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#f2f0eb",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "ใช้ Face ID เพื่อเข้าสู่ระบบ Dschool"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "ใช้กล้องเพื่อสแกน QR"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "เลือกรูปสลิปการโอนเงินหรือใบรับรองแพทย์"
+        }
+      ],
+      "expo-status-bar",
+      "expo-secure-store",
+      "expo-splash-screen"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
