@@ -16,6 +16,7 @@ SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 function RootStack() {
   const { c, scheme } = useTheme();
+  const unlocked = useApp((s) => s.unlocked);
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(c.canvas).catch(() => undefined);
@@ -24,7 +25,16 @@ function RootStack() {
   return (
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.canvas } }} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.canvas } }}>
+        <Stack.Protected guard={!unlocked}>
+          <Stack.Screen name="pin" options={{ animation: 'fade' }} />
+        </Stack.Protected>
+        <Stack.Protected guard={unlocked}>
+          <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="qr" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="dev/kit" />
+        </Stack.Protected>
+      </Stack>
       <ToastHost />
     </>
   );
