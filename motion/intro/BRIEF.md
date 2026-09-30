@@ -2,43 +2,42 @@
 workflow: general-video
 flow: automation
 storyboard: no
-message: "ทุกเรื่องในโรงเรียน ในแอปเดียว — every school errand, in one app"
-destination: in-app welcome intro (Dschool Expo app, full-screen after first unlock)
+message: "โรงเรียนราชดำริ, in one app"
+destination: in-app welcome intro (Dschool Expo app, full screen after first unlock, muted)
 aspect: 1080x2340
+fps: 60
 language: th
 audience: Thai secondary-school students (and the school staff watching the pitch)
-length: 14s
-angle: feature showcase that assembles the app's own Home screen
+length: 18.5s
+angle: from the school's emblem into the app
 ---
 
 ## Intent
 
-A welcome intro for the Dschool student-app pitch prototype. It plays once, full
-screen, right after the first PIN unlock, and can be replayed from Settings →
-แนะนำแอป. It should feel like the app itself coming alive: the frosted-pastel glass
-look, ambient light orbs, calm premium motion — not a generic promo. The user asked
-for "the best as you can".
+The second welcome film, replacing the 30 fps original (still in git history at 4e31777). The user asked
+for "the best and smooth as butter", at 60 fps, built with both Remotion and HyperFrames. Silent; it
+autoplays inside the app, which lays its own ข้าม / เริ่มต้นใช้งาน controls over it.
+
+## Structure (two tools, opaque hand-offs)
+
+HyperFrames is the master timeline (`index.html`). Remotion (`../remotion-intro`) renders the app act as an
+opaque 60 fps clip; transparent WebM is unreliable in Chromium, so nothing is layered with alpha.
+
+| Time | Act | Tool |
+| --- | --- | --- |
+| 0 – 4.5 s | The emblem: a point of light, the nine real rays fan out, the crown draws down, the wheel turns in, the pearl seal forms, the name; then a push through the seal to the canvas | HyperFrames (+ a WebGL light-ray shader) |
+| 4.4 – 18.5 s | The app: the student card springs in, flips to its QR and back, lifts away; the four Home tiles tumble in with their live 60 fps loops; a spotlight tour, one tile and one headline at a time | Remotion |
+| 14.5 – 18.5 s | Finale over the grid: ทุกเรื่องในโรงเรียน / ในแอปเดียว, the seal and Dschool wordmark dock top-left; still from ~16.3 s | HyperFrames |
 
 ## Assets
 
-- assets/fonts/*.ttf — the app's own typefaces (Trirong 300 / 300 italic, IBM Plex Sans
-  Thai 400/500, IBM Plex Mono 400/500), copied from `node_modules/@expo-google-fonts`
-  (SIL OFL 1.1).
-
-## Customizations
-
-- Two renders from one composition via the `theme` variable: `light` and `dark`, so
-  the intro matches the app's appearance setting.
-- Silent (no audio track) — it autoplays inside the app.
-- Last ~1.2s is a clean, still hold: the app overlays its own "เริ่มต้นใช้งาน" CTA
-  and "ข้าม" pill on top of the final frame, so keep the bottom 380px and the
-  top-right corner free of content.
+- `assets/emblem/` — the school emblem split into rays, wheel and blue core (from `../seal/tools/split-logo.py`,
+  pixel-exact).
+- `assets/fonts/` — the app's typefaces (SIL OFL 1.1).
+- 60 fps loops of the tiles and seal, from `../tiles/render-60.sh` and `../seal`.
 
 ## Notes
 
-- All sample data is fictional and matches the app's seed: ภูมิ, ม.5/3,
-  โรงเรียนตัวอย่างวิทยา. No real student data.
-- Critical content stays inside the central 1080×1920 band (y 210–2130) so
-  `contentFit="cover"` on shorter phones never crops it.
-- Colors, radii and motion curves come from the app's `src/theme/tokens.ts` and
-  `src/theme/motion.ts` — see `frame.md`.
+- The seam into Act 2 is the flat theme canvas plus the same grain tile, on both sides.
+- Keep the bottom ~380 px of the final frame clear for the app's CTA, and the top-right for its ข้าม pill.
+- Build everything with `./build.sh`.

@@ -47,25 +47,26 @@ App data persists locally. A changed PIN replaces `123456` until it is changed a
 
 ## Welcome intro
 
-After the first unlock, a 14.5-second welcome film plays full screen. The wordmark appears, then four frosted cards show attendance, the wallet, QR payment, and leave, and the tray unfolds into the Home grid under **ทุกเรื่องในโรงเรียน ในแอปเดียว**. Tap **ข้าม** to skip it at any point. When it ends, choose **เริ่มต้นใช้งาน** to continue or **ดูอีกครั้ง** to replay it. It plays once; replay it from **ตั้งค่า → เกี่ยวกับ → แนะนำแอป**. Resetting the demo shows it again after the next unlock.
+After the first unlock, an 18.5-second welcome film plays full screen at 60 fps. A point of light becomes the school emblem: its sunburst rays fan out, the crown draws in and the wheel turns into place inside the pearl seal. The camera then pushes through the seal into the app. The student card springs in and flips to its QR, and the four Home tiles tumble in with their live loops for a short tour, one tile and headline at a time. It closes on **ทุกเรื่องในโรงเรียน ในแอปเดียว**. Tap **ข้าม** to skip it at any point. When it ends, choose **เริ่มต้นใช้งาน** to continue or **ดูอีกครั้ง** to replay it. It plays once; replay it from **ตั้งค่า → เกี่ยวกับ → แนะนำแอป**. Resetting the demo shows it again after the next unlock.
 
 The film is silent and matches the current light or dark appearance. With Reduce Motion on, it does not autoplay: the final frame appears with **เล่นวิดีโอ**. Playback uses `expo-video`, which Expo Go includes; rebuild any development build created before this dependency was added.
 
-The film is authored in [HyperFrames](https://github.com/heygen-com/hyperframes) as HTML and GSAP in `motion/intro/`, using the app's own tokens, fonts, and motion curves (`frame.md`). To change it, edit `motion/intro/index.html`, then check, render both themes, and re-encode the app copies:
+The film is built with two tools, both using the app's own tokens, fonts and motion curves:
+
+| Part | Tool | Source |
+| --- | --- | --- |
+| Master timeline, the emblem act (with a WebGL light-ray shader) and the finale | [HyperFrames](https://github.com/heygen-com/hyperframes) | `motion/intro/index.html` |
+| The app act: card, flip, tiles and tour (React, spring physics) | [Remotion](https://www.remotion.dev) | `motion/remotion-intro/src/` |
+
+Remotion renders its act as an opaque 60 fps clip, and HyperFrames places it under the finale; both hand-offs meet on the same frame. The Remotion project has its own `package.json` and `node_modules`, and Metro, TypeScript, lint and Jest ignore `motion/`. Remotion is free for individuals and teams of up to three; larger organisations need a company licence. To change the film, edit either source and rebuild everything in one step (Git Bash on Windows):
 
 ```sh
-cd motion/intro
+cd motion/remotion-intro && npm install && cd ../intro
 npx hyperframes check
-npx hyperframes render --quality delivery --output renders/intro-light.mp4
-npx hyperframes render --quality delivery --variables '{"theme":"dark"}' --output renders/intro-dark.mp4
-cd ../..
-for t in light dark; do
-  ffmpeg -y -i motion/intro/renders/intro-$t.mp4 -c:v libx264 -preset veryslow -crf 25 -profile:v high -pix_fmt yuv420p -movflags +faststart -an assets/intro/intro-$t.mp4
-  ffmpeg -y -sseof -0.05 -i motion/intro/renders/intro-$t.mp4 -frames:v 1 -q:v 3 assets/intro/intro-$t-end.jpg
-done
+./build.sh      # 60 fps loops, Remotion act, HyperFrames master, app copies (both themes; a few minutes)
 ```
 
-Rendering needs Node.js 22 or newer and FFmpeg; `npx hyperframes doctor` diagnoses the setup. The full-quality renders stay in `motion/intro/renders/` (git-ignored); the app bundles the roughly 2 MB copies in `assets/intro/`.
+`cd motion/remotion-intro && npx remotion studio src/index.ts` previews the app act with a timeline scrubber. Rendering needs Node.js 22 or newer and FFmpeg; `npx hyperframes doctor` diagnoses the setup. The full-quality renders stay in `motion/intro/renders/` (git-ignored); the app bundles the compressed copies in `assets/intro/`. The previous 30 fps film is in git history (commit `4e31777`).
 
 ## Tile loops
 

@@ -3,3 +3,5 @@
 renders/
 snapshots/
 .hyperframes/
+# 60 fps masters for the welcome film (render-60.sh); rebuilt by ../intro/build.sh.
+renders60/

@@ -1,0 +1,4 @@
+node_modules/
+out/
+# Copied in by ../intro/build.sh from the tile and seal renders.
+public/loops/

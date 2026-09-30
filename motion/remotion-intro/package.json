@@ -1,0 +1,20 @@
+{
+  "name": "dschool-intro-remotion",
+  "private": true,
+  "description": "Act 2 of the Dschool welcome film (the app act). Assembled by the HyperFrames master in ../intro.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:light": "remotion render src/index.ts AppAct out/act2-light.mp4 --props=\"{\\\"theme\\\":\\\"light\\\"}\" --codec=h264 --crf=10",
+    "render:dark": "remotion render src/index.ts AppAct out/act2-dark.mp4 --props=\"{\\\"theme\\\":\\\"dark\\\"}\" --codec=h264 --crf=10"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.530",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.530"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "6.0.3"
+  }
+}
